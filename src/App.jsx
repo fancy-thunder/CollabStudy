@@ -1,12 +1,10 @@
-import { useState } from 'react'
+import { useState } from "react";
+import Login from "./pages/Login/Login";
 
 function App() {
-
   return (
-    <h1 className="bg-red-500" >
-      CollabStudy Coming Soon...
-    </h1>
-  )
+    <Login />
+  );
 }
 
-export default App
+export default App;
