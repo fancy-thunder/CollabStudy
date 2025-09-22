@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState } from "react";
+import SignUp from "./pages/SignUp/SignUp.jsx";
 
 function App() {
   return (
     <>
-      <h1 class="text-3xl font-bold underline">CollabStudy</h1>
+      <SignUp />
     </>
   );
 }
 
-export default App
+export default App;
