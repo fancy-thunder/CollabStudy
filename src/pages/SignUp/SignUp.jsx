@@ -2,10 +2,10 @@ import React from "react";
 
 const SignUp = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-[#F7F8FA]">
       <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
         {/* Heading */}
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+        <h2 className="text-3xl font-bold text-center text-[#23263A] mb-6">
           Create Your Account
         </h2>
 
@@ -15,7 +15,7 @@ const SignUp = () => {
           <div>
             <label
               htmlFor="fullName"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-[#23263A] mb-1"
             >
               Full Name
             </label>
@@ -24,7 +24,7 @@ const SignUp = () => {
               id="fullName"
               name="fullName"
               placeholder="John Doe"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-4 py-2 border border-[#E4E7EC] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6C5DD3] focus:border-[#6C5DD3] bg-[#F7F8FA] text-[#23263A]"
               required
             />
           </div>
@@ -33,7 +33,7 @@ const SignUp = () => {
           <div>
             <label
               htmlFor="username"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-[#23263A] mb-1"
             >
               Username
             </label>
@@ -42,7 +42,7 @@ const SignUp = () => {
               id="username"
               name="username"
               placeholder="johndoe123"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-4 py-2 border border-[#E4E7EC] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6C5DD3] focus:border-[#6C5DD3] bg-[#F7F8FA] text-[#23263A]"
               required
             />
           </div>
@@ -51,7 +51,7 @@ const SignUp = () => {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-[#23263A] mb-1"
             >
               Email Address
             </label>
@@ -60,7 +60,7 @@ const SignUp = () => {
               id="email"
               name="email"
               placeholder="you@example.com"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-4 py-2 border border-[#E4E7EC] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6C5DD3] focus:border-[#6C5DD3] bg-[#F7F8FA] text-[#23263A]"
               required
             />
           </div>
@@ -69,7 +69,7 @@ const SignUp = () => {
           <div>
             <label
               htmlFor="phone"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-[#23263A] mb-1"
             >
               Phone Number
             </label>
@@ -78,7 +78,7 @@ const SignUp = () => {
               id="phone"
               name="phone"
               placeholder="+1 234 567 890"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-4 py-2 border border-[#E4E7EC] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6C5DD3] focus:border-[#6C5DD3] bg-[#F7F8FA] text-[#23263A]"
               required
             />
           </div>
@@ -87,7 +87,7 @@ const SignUp = () => {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-[#23263A] mb-1"
             >
               Password
             </label>
@@ -96,7 +96,7 @@ const SignUp = () => {
               id="password"
               name="password"
               placeholder="••••••••"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-4 py-2 border border-[#E4E7EC] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6C5DD3] focus:border-[#6C5DD3] bg-[#F7F8FA] text-[#23263A]"
               required
             />
           </div>
@@ -105,7 +105,7 @@ const SignUp = () => {
           <div>
             <label
               htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-[#23263A] mb-1"
             >
               Confirm Password
             </label>
@@ -114,7 +114,7 @@ const SignUp = () => {
               id="confirmPassword"
               name="confirmPassword"
               placeholder="••••••••"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-4 py-2 border border-[#E4E7EC] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6C5DD3] focus:border-[#6C5DD3] bg-[#F7F8FA] text-[#23263A]"
               required
             />
           </div>
@@ -122,18 +122,18 @@ const SignUp = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="w-full py-2 px-4 bg-[#6C5DD3] text-white font-semibold rounded-lg shadow-md hover:bg-[#5a4bcf] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6C5DD3]"
           >
             Sign Up
           </button>
         </form>
 
         {/* Sign in link */}
-        <p className="mt-6 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-sm text-[#23263A]">
           Already have an account?{" "}
           <a
             href="#"
-            className="text-indigo-600 hover:text-indigo-800 font-medium"
+            className="text-[#6C5DD3] hover:text-[#5a4bcf] font-medium"
           >
             Sign in
           </a>
