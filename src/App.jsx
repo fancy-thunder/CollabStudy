@@ -1,10 +1,12 @@
 import { useState } from "react";
+import SignIn from "./pages/SignIn/SignIn.jsx";
 import SignUp from "./pages/SignUp/SignUp.jsx";
 
 function App() {
   return (
     <>
-      <SignUp />
+      {/* <SignIn/> */}
+      <SignUp></SignUp>
     </>
   );
 }
