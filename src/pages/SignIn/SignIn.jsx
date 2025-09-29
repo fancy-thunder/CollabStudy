@@ -1,6 +1,31 @@
 import React from "react";
+import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
 
 const SignIn = () => {
+  const [email,setEmail] = useState("")
+  const [password,setPassword] = useState("")
+
+  async function handleLogin(e){
+      e.preventDefault()
+      try {
+        const credentials = await signInWithEmailAndPassword(auth,email,password)
+        console.log("Logged in")
+        // console.log(credentials)
+      }catch (error) {
+        console.log("Check your credentials again")
+    }
+  }
+
+  const handleEmail = (e) =>{
+    setEmail(e.target.value)
+  }
+
+  const handlePassword = (e) =>{
+    setPassword(e.target.value)
+  }
+
   return (
     <>
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -11,7 +36,7 @@ const SignIn = () => {
           </h2>
 
           {/* Login Form */}
-          <form className="space-y-5">
+          <form onSubmit={handleLogin} className="space-y-5">
             {/* Email */}
             <div>
               <label
@@ -20,7 +45,7 @@ const SignIn = () => {
               >
                 Email/Phone Number
               </label>
-              <input
+              <input onChange={(e)=> handleEmail(e)}
                 type="text"
                 id="email"
                 name="email"
@@ -38,7 +63,7 @@ const SignIn = () => {
               >
                 Password
               </label>
-              <input
+              <input onChange={(e)=> handlePassword(e)}
                 type="password"
                 id="password"
                 name="password"
