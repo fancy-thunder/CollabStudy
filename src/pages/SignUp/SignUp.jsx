@@ -4,6 +4,8 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { db } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { Link } from "react-router-dom";
+
 const SignUp = () => {
   let [fullName, setFullName] = useState("");
   let [username, setUsername] = useState("");
@@ -200,12 +202,12 @@ const SignUp = () => {
         {/* Sign in link */}
         <p className="mt-6 text-center text-sm text-[#23263A]">
           Already have an account?{" "}
-          <a
-            href="#"
+          <Link
+            to="/login"
             className="text-[#6C5DD3] hover:text-[#5a4bcf] font-medium"
           >
             Sign in
-          </a>
+          </Link>
         </p>
       </div>
     </div>
