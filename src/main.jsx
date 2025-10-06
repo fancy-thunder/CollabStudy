@@ -7,10 +7,7 @@ import SignUp from './pages/SignUp/SignUp.jsx'
 import HomePage from './pages/HomePage/HomePage.jsx'
 import Dashboard from './pages/Dashboard/Dashboard.jsx'
 import { AuthProvider } from './context/Auth.jsx'
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import {createBrowserRouter, RouterProvider} from "react-router-dom";
 
 
 

@@ -6,6 +6,7 @@ import { auth } from "../../firebase";
 import { Link } from "react-router-dom";
 const googleProvider = new GoogleAuthProvider();
 const githubProvider = new GithubAuthProvider();
+import { sendOTP, setupRecaptcha } from "../../firebase";
 import { useContext } from "react";
 import AuthContext from "../../context/Auth.jsx";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +18,14 @@ const SignIn = () => {
   const { setUser } = useContext(AuthContext);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [showPhoneLogin, setShowPhoneLogin] = useState(false);
+
   const navigate = useNavigate();
+
+
   async function handleLogin(e) {
     e.preventDefault()
     try {
@@ -36,6 +44,40 @@ const SignIn = () => {
       console.log("Check your credentials again")
     }
   }
+
+  // 🔹 Send OTP
+  const handleSendOTP = async () => {
+    if (!phone.startsWith("+")) {
+      alert("Please include country code (e.g. +1)");
+      return;
+    }
+
+    setupRecaptcha("recaptcha-container");
+    try {
+      const confirmationResult = await sendOTP(phone);
+      window.confirmationResult = confirmationResult;
+      setOtpSent(true);
+      alert("OTP sent!");
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+    }
+  };
+
+  // 🔹 Verify OTP
+  const handleVerifyOTP = async () => {
+    try {
+      const result = await window.confirmationResult.confirm(otp);
+      const user = result.user;
+      setUser(user);
+      localStorage.setItem("user", JSON.stringify(user));
+      alert("Phone number verified: " + user.phoneNumber);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(error);
+      alert("Invalid OTP");
+    }
+  };
 
   const handleGoogleSignIn = async () => {
     try {
@@ -173,24 +215,52 @@ const SignIn = () => {
               />
               <span>Continue with GitHub</span>
             </button>
-            <button className="w-full flex items-center justify-center gap-2 py-2 border rounded-lg hover:bg-gray-50">
-              {/* Simple phone icon SVG */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5 text-gray-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+
+            {/* 🔹 Phone login */}
+            {!showPhoneLogin ? (
+              <button
+                onClick={() => setShowPhoneLogin(true)}
+                className="w-full flex items-center justify-center gap-2 py-2 border rounded-lg hover:bg-gray-50"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm0 10a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2zm10-10a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm0 10a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                <img
+                  src="https://www.svgrepo.com/show/475200/phone-call.svg"
+                  alt="Phone"
+                  className="w-5 h-5"
                 />
-              </svg>
-              <span>Continue with Phone Number</span>
-            </button>
+                <span>Log In with phone number</span>
+              </button>
+            ) : (
+              <div className="mt-4 space-y-3">
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+11234567890"
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500"
+                />
+                {!otpSent ? (
+                  <button onClick={handleSendOTP} disabled={otpSent} className="w-full py-2 border rounded-lg hover:bg-gray-50">
+                    {otpSent ? "OTP Sent" : "Send OTP"}
+                  </button>
+                ) : (
+                  <>
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="Enter OTP"
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500"
+                    />
+                    <button onClick={handleVerifyOTP} className="w-full py-2 border rounded-lg bg-indigo-600 text-white">
+                      Verify OTP
+                    </button>
+                  </>
+                )}
+
+                {/* Required by Firebase */}
+                <div id="recaptcha-container"></div>
+              </div>
+            )}
           </div>
 
           {/* Sign up */}
