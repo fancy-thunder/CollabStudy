@@ -6,6 +6,7 @@ import SignIn from './pages/SignIn/SignIn.jsx'
 import SignUp from './pages/SignUp/SignUp.jsx'
 import HomePage from './pages/HomePage/HomePage.jsx'
 import Dashboard from './pages/Dashboard/Dashboard.jsx'
+import Form from './pages/Guided Profile Completion/Form.jsx'
 import { AuthProvider } from './context/Auth.jsx'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <Dashboard />,
+  },
+  {
+    path: "/form",
+    element: <Form />,
   },
 ]);
 
