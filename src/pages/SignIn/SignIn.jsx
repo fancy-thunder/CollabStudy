@@ -134,14 +134,14 @@ const SignIn = () => {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Email/Phone Number
+                Email
               </label>
               <input onChange={(e) => handleEmail(e)}
                 type="text"
                 id="email"
                 name="email"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="you@example.com/+1 234 567 890"
+                placeholder="you@example.com"
                 required
               />
             </div>
@@ -215,52 +215,6 @@ const SignIn = () => {
               />
               <span>Continue with GitHub</span>
             </button>
-
-            {/* 🔹 Phone login */}
-            {!showPhoneLogin ? (
-              <button
-                onClick={() => setShowPhoneLogin(true)}
-                className="w-full flex items-center justify-center gap-2 py-2 border rounded-lg hover:bg-gray-50"
-              >
-                <img
-                  src="https://www.svgrepo.com/show/475200/phone-call.svg"
-                  alt="Phone"
-                  className="w-5 h-5"
-                />
-                <span>Log In with phone number</span>
-              </button>
-            ) : (
-              <div className="mt-4 space-y-3">
-                <input
-                  type="text"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+11234567890"
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500"
-                />
-                {!otpSent ? (
-                  <button onClick={handleSendOTP} disabled={otpSent} className="w-full py-2 border rounded-lg hover:bg-gray-50">
-                    {otpSent ? "OTP Sent" : "Send OTP"}
-                  </button>
-                ) : (
-                  <>
-                    <input
-                      type="text"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                      placeholder="Enter OTP"
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-indigo-500"
-                    />
-                    <button onClick={handleVerifyOTP} className="w-full py-2 border rounded-lg bg-indigo-600 text-white">
-                      Verify OTP
-                    </button>
-                  </>
-                )}
-
-                {/* Required by Firebase */}
-                <div id="recaptcha-container"></div>
-              </div>
-            )}
           </div>
 
           {/* Sign up */}

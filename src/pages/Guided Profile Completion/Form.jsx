@@ -38,8 +38,8 @@ const GuidedProfileForm = ({ onSubmit }) => {
   const progress = step === 1 ? 33 : step === 2 ? 66 : 100;
 
   const handleFinalSubmit = async () => {
-    // Get current user from localStorage
     const user = JSON.parse(localStorage.getItem("user"));
+    console.log("User UID:", user.uid);
     if (user && user.uid) {
       await setDoc(doc(db, "user", user.uid), {
         firstName,

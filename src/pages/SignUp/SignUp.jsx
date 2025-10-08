@@ -3,13 +3,14 @@ import { auth } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { db } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
   let [confirmPassword, setConfirmPassword] = useState("");
   let [status, setStatus] = useState("idle");
+  const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -19,19 +20,17 @@ const SignUp = () => {
     }
     setStatus("loading");
     createUserWithEmailAndPassword(auth, email, password)
-      .then((user) => {
-        setDoc(doc(db, "user", user.user.uid), {
-          email: email,
-        }).then(() => {
-          setStatus("success");
-          setEmail("");
-          setPassword("");
-          setConfirmPassword("");
-        }).catch(() => {
-          setStatus("error");
-        });
-      })
-      .catch(() => {
+      .then((userCredential) => {
+        console.log("User:", userCredential.user);
+        localStorage.setItem("user", JSON.stringify({
+          uid: userCredential.user.uid,
+        }));
+        setStatus("success");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        navigate("/form"); 
+      }).catch(() => {
         setStatus("error");
       });
   }
