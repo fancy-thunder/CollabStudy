@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { db } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+
 
 const GuidedProfileForm = ({ onSubmit }) => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
 
   // Form 1: Personal Info
@@ -95,6 +98,8 @@ const GuidedProfileForm = ({ onSubmit }) => {
         aiGeneratedTests: null,
         offlineNotes: null,
       }, { merge: true });
+
+      navigate("/profile");
     }
     if (onSubmit) {
       onSubmit({
