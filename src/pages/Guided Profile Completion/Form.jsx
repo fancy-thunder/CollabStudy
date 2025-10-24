@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { db } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-
-
+import { storage } from "../../firebase";
+import { ref } from "firebase/storage";
+import { uploadBytes } from "firebase/storage";
+import { getDownloadURL } from "firebase/storage";
+import axios from "axios"
 const GuidedProfileForm = ({ onSubmit }) => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -21,21 +24,25 @@ const GuidedProfileForm = ({ onSubmit }) => {
   const [degreeOrClass, setDegreeOrClass] = useState("");
   const [fieldOfStudy, setFieldOfStudy] = useState("");
   const [academicYear, setAcademicYear] = useState("");
+  const [imageUrl, setImageUrl] = useState("")
 
-  // Form 3: Profile Picture
-  const [profileImage, setProfileImage] = useState("");
-  const [profileImageFile, setProfileImageFile] = useState(null);
+  const handleProfileImageUpload = async (file) => {
+    console.log(file)
+    if (!file) return;
 
-  const handleProfileImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setProfileImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "CollabStudy_Profile-Pictures"); // replace with your actual preset
+    data.append("cloud_name", "dx1ays0ph"); // optional, for clarity
+
+
+    const res = await axios.post(
+      "https://api.cloudinary.com/v1_1/dx1ays0ph/image/upload",
+      data
+    );
+    console.log(res.data.secure_url);
+
+    alert("Uploaded Successfully!");
   };
 
   const progress = step === 1 ? 33 : step === 2 ? 66 : 100;
@@ -382,16 +389,15 @@ const GuidedProfileForm = ({ onSubmit }) => {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={handleProfileImageUpload}
+                  onChange={(e) => {
+                    handleProfileImageUpload(e.target.files[0])
+                  }}
                   className="w-full border border-gray-300 rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
-                {profileImage && (
-                  <img
-                    src={profileImage}
-                    alt="Profile Preview"
-                    className="mt-2 w-20 h-20 object-cover rounded-full mx-auto"
-                  />
-                )}
+                {
+                  imageUrl && <img src={imageUrl} alt="" width={20} height={20} />
+                }
+
               </div>
               <div className="flex gap-2">
                 <button
