@@ -2,13 +2,13 @@ import React from "react";
 
 const links = [
   {
-    label: "Home",
+    label: "Dashboard",
     icon: (
       <svg
         width="22"
         height="22"
         fill="none"
-        stroke="white"
+        stroke="currentColor"
         strokeWidth="2"
         viewBox="0 0 24 24"
       >
@@ -18,17 +18,17 @@ const links = [
     ),
   },
   {
-    label: "Dashboard",
+    label: "AI Teacher",
     icon: (
       <svg
         width="22"
         height="22"
         fill="none"
-        stroke="white"
+        stroke="currentColor"
         strokeWidth="2"
         viewBox="0 0 24 24"
       >
-        <path d="M3 13h4v8H3v-8zm7-6h4v14h-4V7zm7 4h4v10h-4V11z" />
+        <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
       </svg>
     ),
   },
@@ -39,7 +39,7 @@ const links = [
         width="22"
         height="22"
         fill="none"
-        stroke="white"
+        stroke="currentColor"
         strokeWidth="2"
         viewBox="0 0 24 24"
       >
@@ -48,111 +48,103 @@ const links = [
     ),
   },
   {
-    label: "My Subjects",
+    label: "Revision",
     icon: (
       <svg
         width="22"
         height="22"
         fill="none"
-        stroke="white"
+        stroke="currentColor"
         strokeWidth="2"
         viewBox="0 0 24 24"
       >
-        <path d="M4 19h16M4 15h16M4 11h16M4 7h16" />
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
       </svg>
     ),
   },
   {
-    label: "AI Assistant",
+    label: "Profile",
     icon: (
       <svg
         width="22"
         height="22"
         fill="none"
-        stroke="white"
+        stroke="currentColor"
         strokeWidth="2"
         viewBox="0 0 24 24"
       >
-        <circle cx="12" cy="12" r="10" />
-        <circle cx="12" cy="12" r="4" />
+        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
       </svg>
     ),
   },
   {
-    label: "Personal Notes",
+    label: "Settings",
     icon: (
       <svg
         width="22"
         height="22"
         fill="none"
-        stroke="white"
+        stroke="currentColor"
         strokeWidth="2"
         viewBox="0 0 24 24"
       >
-        <path d="M4 4h16v16H4V4zm4 4h8v8H8V8z" />
-      </svg>
-    ),
-  },
-  {
-    label: "Tests & Quizzes",
-    icon: (
-      <svg
-        width="22"
-        height="22"
-        fill="none"
-        stroke="white"
-        strokeWidth="2"
-        viewBox="0 0 24 24"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <path d="M8 12h8" />
-      </svg>
-    ),
-  },
-  {
-    label: "Achievements",
-    icon: (
-      <svg
-        width="22"
-        height="22"
-        fill="none"
-        stroke="white"
-        strokeWidth="2"
-        viewBox="0 0 24 24"
-      >
-        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+        <circle cx="12" cy="12" r="3" />
+        <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3m15.364 6.364l-4.243-4.243m-4.242 0L5.636 18.364m12.728 0l-4.243-4.243m-4.242 0L5.636 5.636" />
       </svg>
     ),
   },
 ];
 
-const activeIndex = 0; // Home
+const activeIndex = 0; // Dashboard
 
 const Sidebar = () => (
-  <aside className="w-64 bg-[#23263A] flex flex-col py-8 px-6 min-h-screen">
-    <div className="flex items-center mb-10">
-      <div className="w-8 h-8 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-2">
-        <span className="tracking-tight">AI</span>
+  <aside className="w-64 bg-white border-r border-gray-200 flex flex-col py-6 px-4 min-h-screen">
+    {/* Logo */}
+    <div className="flex items-center gap-3 mb-8 px-3">
+      <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-violet-600 rounded-lg flex items-center justify-center">
+        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+        </svg>
       </div>
-      <span className="font-semibold text-lg text-white">CollabStudy</span>
+      <span className="font-bold text-xl text-gray-900">CollabStudy</span>
     </div>
-    <nav className="flex flex-col gap-2">
+    
+    {/* Navigation */}
+    <nav className="flex flex-col gap-1">
       {links.map((link, idx) => (
         <a
           key={link.label}
           href="#"
-          className={`flex items-center gap-3 px-3 py-2 rounded-lg font-medium
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all
             ${
               idx === activeIndex
-                ? "bg-[#6C5DD3] text-white"
-                : "text-white hover:bg-[#2A2D43]"
+                ? "bg-purple-100 text-purple-700 border-l-4 border-purple-600"
+                : "text-gray-700 hover:bg-gray-50"
             }
           `}
         >
-          {link.icon}
+          <span className={idx === activeIndex ? "text-purple-600" : "text-gray-500"}>
+            {link.icon}
+          </span>
           <span>{link.label}</span>
         </a>
       ))}
+      
+      {/* Logout button */}
+      <a
+        href="#"
+        className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-red-600 hover:bg-red-50 mt-4"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+        <span>Logout</span>
+      </a>
     </nav>
   </aside>
 );

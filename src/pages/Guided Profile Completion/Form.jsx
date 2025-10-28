@@ -173,14 +173,14 @@ const GuidedProfileForm = ({ onSubmit }) => {
         <div className="mb-6">
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div
-              className="bg-indigo-600 h-2.5 rounded-full transition-all"
+              className="bg-gradient-to-r from-purple-600 to-violet-600 h-2.5 rounded-full transition-all"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
           <div className="flex justify-between text-xs mt-2 text-gray-500">
-            <span className={step === 1 ? "font-semibold text-indigo-600" : ""}>Personal Info</span>
-            <span className={step === 2 ? "font-semibold text-indigo-600" : ""}>Academic Info</span>
-            <span className={step === 3 ? "font-semibold text-indigo-600" : ""}>Profile Picture</span>
+            <span className={step === 1 ? "font-semibold text-purple-600" : ""}>Personal Info</span>
+            <span className={step === 2 ? "font-semibold text-purple-600" : ""}>Academic Info</span>
+            <span className={step === 3 ? "font-semibold text-purple-600" : ""}>Profile Picture</span>
           </div>
         </div>
         {/* Form 1: Personal Info */}
@@ -283,7 +283,7 @@ const GuidedProfileForm = ({ onSubmit }) => {
               </div>
               <button
                 type="submit"
-                className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="w-full py-2 px-4 bg-gradient-to-r from-purple-600 to-violet-600 text-white font-semibold rounded-lg shadow-md hover:from-purple-700 hover:to-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
               >
                 Next
               </button>
@@ -367,7 +367,7 @@ const GuidedProfileForm = ({ onSubmit }) => {
                 </button>
                 <button
                   type="submit"
-                  className="w-1/2 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="w-1/2 py-2 px-4 bg-gradient-to-r from-purple-600 to-violet-600 text-white font-semibold rounded-lg shadow-md hover:from-purple-700 hover:to-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
                 >
                   Next
                 </button>
@@ -409,7 +409,7 @@ const GuidedProfileForm = ({ onSubmit }) => {
                 </button>
                 <button
                   type="submit"
-                  className="w-1/2 py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="w-1/2 py-2 px-4 bg-gradient-to-r from-purple-600 to-violet-600 text-white font-semibold rounded-lg shadow-md hover:from-purple-700 hover:to-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
                 >
                   Submit
                 </button>
