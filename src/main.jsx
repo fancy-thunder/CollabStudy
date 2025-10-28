@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage/HomePage.jsx'
 import Dashboard from './pages/Dashboard/Dashboard.jsx'
 import Form from './pages/Guided Profile Completion/Form.jsx'
 import Profile from './pages/Profile/Profile.jsx'
+import Community from './pages/Community/Community.jsx'
 import { AuthProvider } from './context/Auth.jsx'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 
@@ -37,6 +38,9 @@ const router = createBrowserRouter([
   {
     path: "/profile",
     element: <Profile />,
+  },{
+    path: "/community",
+    element: <Community/>,
   },
 ]);
 
