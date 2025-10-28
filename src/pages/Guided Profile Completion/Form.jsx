@@ -9,7 +9,7 @@ import { getDownloadURL } from "firebase/storage";
 import axios from "axios"
 const GuidedProfileForm = ({ onSubmit }) => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
+  // const [step, setStep] = useState(1);
 
   // Form 1: Personal Info
   const [firstName, setFirstName] = useState("");
