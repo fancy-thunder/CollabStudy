@@ -6,9 +6,11 @@ import { storage } from "../../firebase";
 import { ref } from "firebase/storage";
 import { uploadBytes } from "firebase/storage";
 import { getDownloadURL } from "firebase/storage";
+import { useParams } from "react-router-dom";
 import axios from "axios"
 const GuidedProfileForm = ({ onSubmit }) => {
   const navigate = useNavigate();
+  const { userId } = useParams()
   const [step, setStep] = useState(1);
 
   // Form 1: Personal Info
@@ -40,7 +42,7 @@ const GuidedProfileForm = ({ onSubmit }) => {
       "https://api.cloudinary.com/v1_1/dx1ays0ph/image/upload",
       data
     );
-    console.log(res.data.secure_url);
+    setImageUrl(res.data.secure_url);
 
     alert("Uploaded Successfully!");
   };
@@ -48,122 +50,67 @@ const GuidedProfileForm = ({ onSubmit }) => {
   const progress = step === 1 ? 33 : step === 2 ? 66 : 100;
 
   const handleFinalSubmit = async () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    console.log("User UID:", user.uid);
-    if (user && user.uid) {
-      await setDoc(doc(db, "user", user.uid), {
-        firstName,
-        lastName,
-        phoneNumber,
-        dateOfBirth,
-        gender,
-        bio,
-        institutionName,
-        degreeOrClass,
-        fieldOfStudy,
-        academicYear,
-        profileImage,
-        totalXP: null,
-        level: null,
-        streakDays: null,
-        completedTopics: null,
-        quizzesTaken: null,
-        averageScore: null,
-        weakAreas: null,
-        lastRevisionDate: null,
-        preferredLanguage: null,
-        darkMode: null,
-        notificationPreferences: {
-          studyReminders: null,
-          communityMentions: null,
-          AIUpdates: null,
-        },
-        revisionInterval: null,
-        aiPersona: null,
-        learningGoals: null,
-        savedAIResponses: null,
-        favoriteTopics: null,
-        difficultyPreference: null,
-        lastActiveAIInteraction: null,
-        followers: null,
-        following: null,
-        postsCount: null,
-        badges: null,
-        achievements: null,
-        joinedCommunities: null,
-        recentActivity: null,
-        role: null,
-        createdAt: null,
-        updatedAt: null,
-        lastLogin: null,
-        deviceInfo: null,
-        isVerified: null,
-        status: null,
-        connectedAccounts: null,
-        subscriptionPlan: null,
-        studyTimeLogs: null,
-        aiGeneratedTests: null,
-        offlineNotes: null,
-      }, { merge: true });
+    // const user = JSON.parse(localStorage.getItem("user"));
+    
 
-      navigate("/profile");
-    }
-    if (onSubmit) {
-      onSubmit({
-        firstName,
-        lastName,
-        phoneNumber,
-        dateOfBirth,
-        gender,
-        bio,
-        institutionName,
-        degreeOrClass,
-        fieldOfStudy,
-        academicYear,
-        profileImage,
-        totalXP: null,
-        level: null,
-        streakDays: null,
-        completedTopics: null,
-        quizzesTaken: null,
-        averageScore: null,
-        weakAreas: null,
-        lastRevisionDate: null,
-        preferredLanguage: null,
-        darkMode: null,
-        notificationPreferences: {
-          studyReminders: null,
-          communityMentions: null,
-          AIUpdates: null,
-        },
-        revisionInterval: null,
-        aiPersona: null,
-        learningGoals: null,
-        savedAIResponses: null,
-        favoriteTopics: null,
-        difficultyPreference: null,
-        lastActiveAIInteraction: null,
-        followers: null,
-        following: null,
-        postsCount: null,
-        badges: null,
-        achievements: null,
-        joinedCommunities: null,
-        recentActivity: null,
-        role: null,
-        createdAt: null,
-        updatedAt: null,
-        lastLogin: null,
-        deviceInfo: null,
-        isVerified: null,
-        status: null,
-        connectedAccounts: null,
-        subscriptionPlan: null,
-        studyTimeLogs: null,
-        aiGeneratedTests: null,
-        offlineNotes: null,
-      });
-    }
+    await setDoc(doc(db, "user", userId), {
+      firstName,
+      lastName,
+      phoneNumber,
+      dateOfBirth,
+      gender,
+      bio,
+      institutionName,
+      degreeOrClass,
+      fieldOfStudy,
+      academicYear,
+      imageUrl,
+      totalXP: null,
+      level: null,
+      streakDays: null,
+      completedTopics: null,
+      quizzesTaken: null,
+      averageScore: null,
+      weakAreas: null,
+      lastRevisionDate: null,
+      preferredLanguage: null,
+      darkMode: null,
+      notificationPreferences: {
+        studyReminders: null,
+        communityMentions: null,
+        AIUpdates: null,
+      },
+      revisionInterval: null,
+      aiPersona: null,
+      learningGoals: null,
+      savedAIResponses: null,
+      favoriteTopics: null,
+      difficultyPreference: null,
+      lastActiveAIInteraction: null,
+      followers: null,
+      following: null,
+      postsCount: null,
+      badges: null,
+      achievements: null,
+      joinedCommunities: null,
+      recentActivity: null,
+      role: null,
+      createdAt: null,
+      updatedAt: null,
+      lastLogin: null,
+      deviceInfo: null,
+      isVerified: null,
+      status: null,
+      connectedAccounts: null,
+      subscriptionPlan: null,
+      studyTimeLogs: null,
+      aiGeneratedTests: null,
+      offlineNotes: null,
+    }, { merge: true });
+
+
+    navigate(`/profile/${userId}`);
+
   };
 
   return (

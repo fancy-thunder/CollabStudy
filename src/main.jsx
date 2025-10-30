@@ -31,11 +31,11 @@ const router = createBrowserRouter([
     element: <Dashboard />,
   },
   {
-    path: "/form",
+    path: "/form/:userId",
     element: <Form />,
   },
   {
-    path: "/profile",
+    path: "/profile/:userId",
     element: <Profile />,
   },
 ]);
