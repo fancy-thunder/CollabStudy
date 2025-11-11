@@ -1,6 +1,43 @@
 # CollabStudy - Work Progress
 
-## Latest Update: HomePage Redesign - Welcome/Landing Page
+## Latest Update: Instagram-Style Community Page
+
+### Completed Tasks
+1. **Redesigned Community Page** (`src/pages/Community/Community.jsx`)
+   - Instagram-style dark theme layout
+   - Three-column design: Left sidebar, Main feed, Right sidebar
+   - Stories section with gradient borders
+   - Posts with image placeholders
+   - Floating messages bar
+
+### Design Features
+
+#### Layout Structure
+- **Left Sidebar**: Fixed navigation with menu items (Home, Search, Explore, Reels, Messages with badge, Notifications, Create, Dashboard, Profile, More)
+- **Main Content**: Stories section + Posts feed (centered)
+- **Right Sidebar**: User profile with verified badge, suggestions list, footer links
+- **Floating Messages**: Bottom-right corner with conversation previews and notification badge
+
+#### Visual Elements
+- Dark black background (#000) with neutral-800 borders
+- Gradient story borders (purple-pink-orange) for active stories
+- User avatars with gradient backgrounds (indigo-purple)
+- Instagram-style post layout with image placeholders
+- Like, comment, share, bookmark action buttons
+- Verified user badge (blue checkmark)
+- Comment input at bottom of each post
+- Footer links section in right sidebar
+
+#### Component Details
+- Stories with horizontal scroll (hidden scrollbar)
+- Posts with username, timestamp, likes count, caption, comments
+- Suggestions with "Follow" buttons and mutual friends info
+- Notification badges on Messages menu item
+- Hover effects and transitions throughout
+
+---
+
+## Previous Update: HomePage Redesign - Welcome/Landing Page
 
 ### Completed Tasks
 1. **Redesigned HomePage Component** (`src/pages/HomePage/HomePage.jsx`)

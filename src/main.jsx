@@ -10,7 +10,7 @@ import Form from './pages/Guided Profile Completion/Form.jsx'
 import Profile from './pages/Profile/Profile.jsx'
 import { AuthProvider } from './context/Auth.jsx'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
-
+import Community from './pages/Community/Community.jsx'
 
 
 const router = createBrowserRouter([
@@ -38,6 +38,10 @@ const router = createBrowserRouter([
     path: "/profile/:userId",
     element: <Profile />,
   },
+  {
+    path : "/community",
+    element : <Community />
+  }
 ]);
 
 
