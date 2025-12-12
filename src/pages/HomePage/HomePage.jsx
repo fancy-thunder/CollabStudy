@@ -1,7 +1,38 @@
 import React from "react";
 import Navbar from "../../components/Navbar.jsx";
-
+import AuthContext from "../../context/Auth.jsx";
+import { useContext } from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 const HomePage = () => {
+
+  const { setIsLoggedIn, setUserEmail, setUserDisplayName } = useContext(AuthContext);
+  
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          console.log("User data in home page ", user.uid)
+          if (user) {
+            setIsLoggedIn(true);
+            setUserEmail(user.email);
+            setUserDisplayName(localStorage.getItem("userDisplayName"));
+            navigate(`/profile/${user.uid}`)
+          }
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+        }
+      }
+    };
+    
+    checkUser();
+  }, [setIsLoggedIn, setUserEmail, setUserDisplayName, navigate])
+
+
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
       <Navbar />
@@ -70,7 +101,7 @@ const HomePage = () => {
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <span className="mt-1 size-6 grid place-items-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-indigo-600">
-                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                   </span>
                   <div>
                     <h4 className="font-medium text-neutral-900 dark:text-neutral-100">Document Summarization</h4>
@@ -80,7 +111,7 @@ const HomePage = () => {
 
                 <li className="flex items-start gap-3">
                   <span className="mt-1 size-6 grid place-items-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-purple-600">
-                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                   </span>
                   <div>
                     <h4 className="font-medium text-neutral-900 dark:text-neutral-100">Gamified Learning</h4>
@@ -90,7 +121,7 @@ const HomePage = () => {
 
                 <li className="flex items-start gap-3">
                   <span className="mt-1 size-6 grid place-items-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-green-600">
-                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                   </span>
                   <div>
                     <h4 className="font-medium text-neutral-900 dark:text-neutral-100">Auto-Generated Quizzes</h4>
@@ -100,7 +131,7 @@ const HomePage = () => {
 
                 <li className="flex items-start gap-3">
                   <span className="mt-1 size-6 grid place-items-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-orange-600">
-                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                   </span>
                   <div>
                     <h4 className="font-medium text-neutral-900 dark:text-neutral-100">Smart Revision Tracking</h4>
@@ -127,7 +158,7 @@ const HomePage = () => {
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <span className="mt-1 size-6 grid place-items-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-sky-600">
-                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                   </span>
                   <div>
                     <h4 className="font-medium text-neutral-900 dark:text-neutral-100">Study Groups</h4>
@@ -137,7 +168,7 @@ const HomePage = () => {
 
                 <li className="flex items-start gap-3">
                   <span className="mt-1 size-6 grid place-items-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-emerald-600">
-                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                   </span>
                   <div>
                     <h4 className="font-medium text-neutral-900 dark:text-neutral-100">Material Sharing</h4>
@@ -147,7 +178,7 @@ const HomePage = () => {
 
                 <li className="flex items-start gap-3">
                   <span className="mt-1 size-6 grid place-items-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-purple-600">
-                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                   </span>
                   <div>
                     <h4 className="font-medium text-neutral-900 dark:text-neutral-100">Group Discussions</h4>
@@ -157,7 +188,7 @@ const HomePage = () => {
 
                 <li className="flex items-start gap-3">
                   <span className="mt-1 size-6 grid place-items-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-orange-600">
-                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                   </span>
                   <div>
                     <h4 className="font-medium text-neutral-900 dark:text-neutral-100">Achievement Sharing</h4>

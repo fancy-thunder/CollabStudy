@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import AuthContext from "../context/Auth.jsx";
 
 const Navbar = () => {
-  const { user } = useContext(AuthContext);
+  const { userEmail, isLoggedIn } = useContext(AuthContext);
 
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/80 backdrop-blur">
@@ -27,11 +27,16 @@ const Navbar = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-3">
-          {user ? (
+          {isLoggedIn ? (
             <>
               <span className="text-sm text-neutral-700 dark:text-neutral-300 font-medium">
-                {user.email}
+                {userEmail}
               </span>
+              <Link to="/community">
+                <button className="rounded-lg border border-neutral-300 dark:border-neutral-700 px-3 py-1.5 text-sm text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800">
+                  Visit Community
+                </button>
+              </Link>
               <button className="rounded-lg border border-neutral-300 dark:border-neutral-700 px-3 py-1.5 text-sm text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800">
                 Logout
               </button>

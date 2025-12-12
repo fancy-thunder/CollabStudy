@@ -7,6 +7,7 @@ import { ref } from "firebase/storage";
 import { uploadBytes } from "firebase/storage";
 import { getDownloadURL } from "firebase/storage";
 import { useParams } from "react-router-dom";
+import uploadCloudinary from "../../services/cloudinaryUpload";
 import axios from "axios"
 const GuidedProfileForm = ({ onSubmit }) => {
   const navigate = useNavigate();
@@ -37,12 +38,9 @@ const GuidedProfileForm = ({ onSubmit }) => {
     data.append("upload_preset", "CollabStudy_Profile-Pictures"); // replace with your actual preset
     data.append("cloud_name", "dx1ays0ph"); // optional, for clarity
 
-
-    const res = await axios.post(
-      "https://api.cloudinary.com/v1_1/dx1ays0ph/image/upload",
-      data
-    );
-    setImageUrl(res.data.secure_url);
+    let response = uploadCloudinary(data)
+    
+    setImageUrl(response.data.secure_url);
 
     alert("Uploaded Successfully!");
   };

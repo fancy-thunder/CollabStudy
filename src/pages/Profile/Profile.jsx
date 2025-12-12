@@ -4,8 +4,8 @@ import { db } from "../../firebase";
 import { useParams } from "react-router-dom";
 import { FaCheckCircle } from "react-icons/fa";
 import Navbar from "../../components/Navbar"
-
-
+import AuthContext from "../../context/Auth";
+import { useContext } from "react";
 const AVATAR_FALLBACK =
   "https://api.dicebear.com/7.x/initials/svg?seed=User&backgroundType=gradientLinear";
 
@@ -29,6 +29,7 @@ function fmtDate(d) {
 
 const Profile = () => {
   const { userId } = useParams();
+  const {setUserDisplayName} = useContext(AuthContext)
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("posts"); // posts | achievements | activity
@@ -39,7 +40,9 @@ const Profile = () => {
       try {
         const docRef = doc(db, "user", userId);
         const snap = await getDoc(docRef);
+        setUserDisplayName(snap.data().firstName + " " + snap.data().lastName);
         setProfile(snap.exists() ? snap.data() : null);
+        localStorage.setItem("userDisplayName", snap.data().firstName + " " + snap.data().lastName);
       } catch (e) {
         console.error("Error fetching user profile", e);
         setProfile(null);

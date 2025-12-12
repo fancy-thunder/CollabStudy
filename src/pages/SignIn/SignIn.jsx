@@ -8,9 +8,11 @@ const googleProvider = new GoogleAuthProvider();
 const githubProvider = new GithubAuthProvider();
 import { sendOTP, setupRecaptcha } from "../../firebase";
 import AuthContext from "../../context/Auth.jsx";
+import {toast} from 'react-toastify';
+
 
 const SignIn = () => {
-  const { setUser } = useContext(AuthContext);
+  const { setUserEmail, setIsLoggedIn } = useContext(AuthContext);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [phone, setPhone] = useState("");
@@ -24,16 +26,20 @@ const SignIn = () => {
     e.preventDefault()
     try {
       const credentials = await signInWithEmailAndPassword(auth, email, password)
-      console.log(credentials)
-
-      setUser(credentials.user);
-      localStorage.setItem("user", JSON.stringify(credentials.user));
-      // setCookie("token", credentials.user.accessToken);
-
-      navigate(`/profile/${credentials.user.uid}`);
-      console.log("Logged in")
+      if(credentials){
+        setIsLoggedIn(true)
+        setUserEmail(credentials.user.email);
+        toast.success("Logged in successfully")
+        localStorage.setItem("user", JSON.stringify(credentials.user));
+        navigate(`/profile/${credentials.user.uid}`);
+        console.log("Logged in")
+      } else {
+        setIsLoggedIn(false)
+        setUserEmail(null)
+        console.log("Check your credentials again")
+      }
     } catch (error) {
-      console.log("Check your credentials again")
+      console.error("Login error:", error.message);
     }
   }
 

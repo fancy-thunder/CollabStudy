@@ -1,4 +1,4 @@
-import { StrictMode } from 'react'
+import { StrictMode, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import "./main.css"
@@ -11,8 +11,9 @@ import Profile from './pages/Profile/Profile.jsx'
 import { AuthProvider } from './context/Auth.jsx'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Community from './pages/Community/Community.jsx'
-
-
+import { ToastContainer, toast } from 'react-toastify';
+import { useContext } from 'react'
+import AuthContext from './context/Auth.jsx'
 const router = createBrowserRouter([
   {
     path: "/",
@@ -48,6 +49,7 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <ToastContainer />
     <AuthProvider>
       <RouterProvider router={router} />
     </AuthProvider>

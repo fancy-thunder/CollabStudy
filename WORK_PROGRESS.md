@@ -1,6 +1,27 @@
 # CollabStudy - Work Progress
 
-## Latest Update: Instagram-Style Community Page
+## Latest Update: Cloudinary Upload Service Enhancement
+
+### Completed Tasks
+1. **Updated Cloudinary Upload Service** (`src/services/cloudinaryUpload.js`)
+   - Added support for both **image** and **video** uploads
+   - Added `type` parameter (default: "image")
+   - Validation for upload types
+
+### Usage
+```javascript
+import uploadCloudinary from "./services/cloudinaryUpload";
+
+// Image upload (default)
+const imageRes = await uploadCloudinary(formData);
+
+// Video upload
+const videoRes = await uploadCloudinary(formData, "video");
+```
+
+---
+
+## Previous Update: Instagram-Style Community Page
 
 ### Completed Tasks
 1. **Redesigned Community Page** (`src/pages/Community/Community.jsx`)

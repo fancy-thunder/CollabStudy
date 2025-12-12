@@ -1,11 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { FaHeart, FaRegHeart, FaComment, FaBookmark, FaRegBookmark, FaHome, FaSearch, FaCompass, FaPlay, FaPaperPlane, FaBell, FaPlusCircle, FaChartBar, FaBars, FaImage, FaVideo } from "react-icons/fa";
+import AuthContext from "../../context/Auth.jsx";
+import uploadCloudinary from "../../services/cloudinaryUpload.js";
 
 function Community() {
   // Sample posts data
-  let [title , setTitle] = useState("")
-  let [body , setBody] = useState("")
-  let [graphic , setGraphic] = useState([])
+  const [title, setTitle] = useState("")
+  const [body, setBody] = useState("")
+  const [graphic, setGraphic] = useState([])
+
+  // Get context values with fallback
+  const contextValue = useContext(AuthContext);
+  const userEmail = contextValue?.userEmail || null;
+  const userDisplayName = contextValue?.userDisplayName || null;
+  const isLoggedIn = contextValue?.isLoggedIn || false;
 
   const posts = [
     {
@@ -42,6 +50,23 @@ function Community() {
       isBookmarked: true,
     },
   ];
+  async function uploadGraphic(file , type) {
+    console.log(file)
+    if (!file) return;
+
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "CollabStudyPosts"); // replace with your actual preset
+    data.append("cloud_name", "dx1ays0ph"); // optional, for clarity
+
+    let response = await uploadCloudinary(data , type)
+
+    setGraphic([...graphic, response.data])
+    alert("Uploaded Successfully!");
+    
+  }
+  console.log(graphic)
+
 
   // Sample suggestions
   const suggestions = [
@@ -57,7 +82,7 @@ function Community() {
         <div className="mb-8">
           <h1 className="text-2xl font-bold">CollabStudy</h1>
         </div>
-        
+
         <nav className="space-y-1">
           <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
             <FaHome className="w-6 h-6" />
@@ -116,44 +141,67 @@ function Community() {
                 U
               </div>
             </div>
-            
+
             {/* Post Form */}
             <div className="flex-1">
               <input
                 type="text"
                 placeholder="Post Title"
                 className="w-full bg-transparent border-0 outline-none text-white placeholder-neutral-500 text-lg font-semibold mb-2"
-                onChange={(e)=>{
+                value={title}
+                onChange={(e) => {
                   setTitle(e.target.value)
                 }}
-            />
-              
-          
-              
+              />
+
+
+
               <textarea
                 placeholder="What's on your mind?"
                 className="w-full bg-transparent border-0 outline-none text-white placeholder-neutral-500 resize-none mb-3 min-h-[100px]"
                 rows="4"
-                onChange={(e)=>{
-                  setBody(e.target.body)
+                value={body}
+                onChange={(e) => {
+                  setBody(e.target.value)
                 }}
               />
-              
+
+
+              {
+                graphic.map((data)=>{
+                 return data.resource_type == "image" ? <img src={data.url} /> :  <video controls > <source src={data.url} type="video/mp4"></source> </video>
+                })  
+              }
+
               {/* Action Buttons */}
               <div className="flex items-center justify-between pt-3 border-t border-neutral-800">
                 <div className="flex items-center gap-4">
-                  <button className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors">
-                    <input type="file" onChange={(e)=>{
-                      setGraphic([...graphic , e.target.files[0]])
-                    }} />
+                  <label className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        uploadGraphic(e.target.files[0] ,  "image")
+                      }}
+                    />
+                    <FaImage className="w-5 h-5" />
                     <span className="text-sm">Photo</span>
-                  </button>
-                  <button className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors">
+                  </label>
+                  <label className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors cursor-pointer">
+                    <input
+                      type="file"
+                      accept="video/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        uploadGraphic(e.target.files[0] , "video")
+                      }}
+                    />
                     <FaVideo className="w-5 h-5" />
                     <span className="text-sm">Video</span>
-                  </button>
+                  </label>
                 </div>
-                
+
                 <button className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all text-sm">
                   Post
                 </button>
@@ -253,12 +301,12 @@ function Community() {
             </div>
             <div>
               <div className="font-semibold text-sm flex items-center gap-1">
-                your_username
+                {userEmail || "your_username"}
                 <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div className="text-sm text-neutral-400">Your Name</div>
+              <div className="text-sm text-neutral-400">{userDisplayName || "Your Name"}</div>
             </div>
           </div>
           <button className="text-indigo-400 text-sm font-semibold">Switch</button>
