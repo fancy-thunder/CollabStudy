@@ -19,6 +19,7 @@ const SignIn = () => {
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [showPhoneLogin, setShowPhoneLogin] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   const navigate = useNavigate();
 
@@ -31,6 +32,7 @@ const SignIn = () => {
         setUserEmail(credentials.user.email);
         toast.success("Logged in successfully")
         localStorage.setItem("user", JSON.stringify(credentials.user));
+        setUserId(credentials.user.uid);
         navigate(`/profile/${credentials.user.uid}`);
         console.log("Logged in")
       } else {

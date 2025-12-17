@@ -2,6 +2,9 @@ import React, { useState, useContext } from "react";
 import { FaHeart, FaRegHeart, FaComment, FaBookmark, FaRegBookmark, FaHome, FaSearch, FaCompass, FaPlay, FaPaperPlane, FaBell, FaPlusCircle, FaChartBar, FaBars, FaImage, FaVideo } from "react-icons/fa";
 import AuthContext from "../../context/Auth.jsx";
 import uploadCloudinary from "../../services/cloudinaryUpload.js";
+import { db } from "../../firebase.js";
+import { collection, addDoc } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 
 function Community() {
   // Sample posts data
@@ -11,10 +14,11 @@ function Community() {
 
   // Get context values with fallback
   const contextValue = useContext(AuthContext);
+  console.log(contextValue)
   const userEmail = contextValue?.userEmail || null;
   const userDisplayName = contextValue?.userDisplayName || null;
   const isLoggedIn = contextValue?.isLoggedIn || false;
-
+  const userId = contextValue?.userId || null;
   const posts = [
     {
       id: 1,
@@ -50,7 +54,7 @@ function Community() {
       isBookmarked: true,
     },
   ];
-  async function uploadGraphic(file , type) {
+  async function uploadGraphic(file, type) {
     console.log(file)
     if (!file) return;
 
@@ -59,14 +63,25 @@ function Community() {
     data.append("upload_preset", "CollabStudyPosts"); // replace with your actual preset
     data.append("cloud_name", "dx1ays0ph"); // optional, for clarity
 
-    let response = await uploadCloudinary(data , type)
+    let response = await uploadCloudinary(data, type)
 
     setGraphic([...graphic, response.data])
     alert("Uploaded Successfully!");
-    
+
   }
   console.log(graphic)
 
+
+
+  async function UploadPost(){
+    addDoc(collection(db, "posts"), {
+      title,
+      body,
+      graphic,
+      createdAt: Timestamp.now(),
+      userId: userId,
+    })
+  }
 
   // Sample suggestions
   const suggestions = [
@@ -166,12 +181,74 @@ function Community() {
                 }}
               />
 
+              <div style={{ "width": "100px", display: "flex" }} >
 
-              {
-                graphic.map((data)=>{
-                 return data.resource_type == "image" ? <img src={data.url} /> :  <video controls > <source src={data.url} type="video/mp4"></source> </video>
-                })  
-              }
+                {graphic.map((data, idx) => (
+                  <div
+                    key={data.public_id || data.url || idx}
+                    style={{
+                      position: "relative",
+                      display: "inline-block",
+                      marginRight: "10px"
+                    }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // remove graphic at idx
+                        setGraphic(graphic.filter((_, i) => i !== idx));
+                      }}
+                      aria-label="Remove media"
+                      style={{
+                        position: "absolute",
+                        top: 4,
+                        right: 4,
+                        zIndex: 2,
+                        background: "rgba(30, 30, 30, 0.80)",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: 20,
+                        height: 20,
+                        color: "white",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                        fontSize: "14px",
+                        padding: 0
+                      }}
+                    >
+                      ×
+                    </button>
+                    {data.resource_type === "image" ? (
+                      <img
+                        src={data.url}
+                        alt="uploaded media"
+                        style={{
+                          maxWidth: 70,
+                          maxHeight: 70,
+                          borderRadius: 6,
+                          objectFit: "cover",
+                          display: "block"
+                        }}
+                      />
+                    ) : (
+                      <video
+                        controls
+                        style={{
+                          maxWidth: 100,
+                          maxHeight: 70,
+                          borderRadius: 6,
+                          display: "block"
+                        }}
+                      >
+                        <source src={data.url} type="video/mp4" />
+                      </video>
+                    )}
+                  </div>
+                ))}
+              </div>
 
               {/* Action Buttons */}
               <div className="flex items-center justify-between pt-3 border-t border-neutral-800">
@@ -182,7 +259,7 @@ function Community() {
                       accept="image/*"
                       className="hidden"
                       onChange={(e) => {
-                        uploadGraphic(e.target.files[0] ,  "image")
+                        uploadGraphic(e.target.files[0], "image")
                       }}
                     />
                     <FaImage className="w-5 h-5" />
@@ -194,7 +271,7 @@ function Community() {
                       accept="video/*"
                       className="hidden"
                       onChange={(e) => {
-                        uploadGraphic(e.target.files[0] , "video")
+                        uploadGraphic(e.target.files[0], "video")
                       }}
                     />
                     <FaVideo className="w-5 h-5" />
@@ -202,7 +279,7 @@ function Community() {
                   </label>
                 </div>
 
-                <button className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all text-sm">
+                <button onClick={UploadPost} className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all text-sm">
                   Post
                 </button>
               </div>
