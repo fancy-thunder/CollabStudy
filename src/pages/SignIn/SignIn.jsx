@@ -12,14 +12,13 @@ import {toast} from 'react-toastify';
 
 
 const SignIn = () => {
-  const { setUserEmail, setIsLoggedIn } = useContext(AuthContext);
+  const { setUserEmail, setIsLoggedIn , setUserId } = useContext(AuthContext);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [showPhoneLogin, setShowPhoneLogin] = useState(false);
-  const [userId, setUserId] = useState(null);
 
   const navigate = useNavigate();
 

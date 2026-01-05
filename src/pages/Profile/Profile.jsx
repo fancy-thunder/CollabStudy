@@ -42,7 +42,7 @@ const Profile = () => {
         const snap = await getDoc(docRef);
         setUserDisplayName(snap.data().firstName + " " + snap.data().lastName);
         setProfile(snap.exists() ? snap.data() : null);
-        localStorage.setItem("userDisplayName", snap.data().firstName + " " + snap.data().lastName);
+        localStorage.setItem("usermeta" , JSON.stringify(snap.data()));
       } catch (e) {
         console.error("Error fetching user profile", e);
         setProfile(null);

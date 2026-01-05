@@ -1,6 +1,46 @@
 # CollabStudy - Work Progress
 
-## Latest Update: Cloudinary Upload Service Enhancement
+## Latest Update: PostCard User Data Fetch Bug Fix
+
+### Fixed Issue
+- **User data returning `undefined`** in `PostCard.jsx`
+  - **Cause**: Collection name mismatch - fetching from `"users"` (plural) but data stored in `"user"` (singular)
+  - **Fix**: Changed `doc(db, "users", post.userId)` → `doc(db, "user", post.userId)` on line 19
+
+---
+
+## Previous Update: PostCard Enhancement with User Data & Carousel
+
+### Completed Tasks
+1. **Enhanced PostCard Component** (`src/pages/Community/components/PostCard.jsx`)
+   - Fetches user data from Firebase using `post.userId`
+   - Instagram-style image/video carousel with navigation arrows
+   - Slide indicators (dots) and counter badge
+   - Displays user avatar, username, and institution
+   - Gradient ring around avatar (Instagram story style)
+   - Timestamp formatting (just now, Xm, Xh, Xd)
+   - Loading state with skeleton animation
+
+### Features
+- **User Data Fetch**: Retrieves `firstName`, `lastName`, `imageUrl`, `institutionName`, `isVerified` from Firebase `user` collection
+- **Carousel**: Navigation arrows, dot indicators, slide counter for multiple media
+- **Media Support**: Both images and videos from `post.graphic` array
+- **Responsive UI**: Hover effects, transitions, proper aspect ratios
+
+---
+
+## Previous Update: Community Page Bug Fix
+
+### Fixed Issue
+- **"destroy is not a function" Error** in `Community.jsx`
+  - **Cause**: `useEffect` callback was declared as `async`, which returns a Promise instead of a cleanup function
+  - **Fix**: Wrapped async logic inside a named function (`fetchPosts`) called within `useEffect`
+  - Added missing Firestore imports: `query`, `orderBy`, `getDocs`
+  - Fixed `postsData` to properly map Firestore documents with `id` field
+
+---
+
+## Previous Update: Cloudinary Upload Service Enhancement
 
 ### Completed Tasks
 1. **Updated Cloudinary Upload Service** (`src/services/cloudinaryUpload.js`)
