@@ -1,11 +1,41 @@
 # CollabStudy - Work Progress
 
-## Latest Update: PostCard User Data Fetch Bug Fix
+## Latest Update: Likes & Comments Subcollections Implementation
+
+### Changes Made
+1. **Community.jsx - UploadPost function**
+   - Removed `likes` and `comment` arrays from post document
+   - Added `likesCount` and `commentsCount` counters (initialized to 0)
+   - Subcollections created automatically when first like/comment is added
+   - Added form reset after successful post upload
+   - Fixed `fetchPosts` to include document `id` for subcollection references
+
+2. **PostCard.jsx - Like functionality with subcollections**
+   - Added `isLiked` and `likesCount` state management
+   - Checks if current user has liked the post from `posts/{postId}/likes/{userId}` subcollection
+   - `handleLike` toggles like: adds/removes document in subcollection + updates counter
+
+### Firestore Structure
+```
+posts (collection)
+  └── {postId} (document)
+        ├── title, body, graphic, createdAt, userId
+        ├── likesCount: number
+        ├── commentsCount: number
+        ├── likes (subcollection)
+        │     └── {userId} (document) { userId, createdAt }
+        └── comments (subcollection)
+              └── {commentId} (document) { userId, text, createdAt }
+```
+
+---
+
+## Previous Update: PostCard User Data Fetch Bug Fix
 
 ### Fixed Issue
 - **User data returning `undefined`** in `PostCard.jsx`
   - **Cause**: Collection name mismatch - fetching from `"users"` (plural) but data stored in `"user"` (singular)
-  - **Fix**: Changed `doc(db, "users", post.userId)` → `doc(db, "user", post.userId)` on line 19
+  - **Fix**: Changed `doc(db, "users", post.userId)` → `doc(db, "user", post.userId)`
 
 ---
 

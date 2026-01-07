@@ -1,36 +1,46 @@
 import { useState, useEffect } from "react";
 import { FaRegHeart, FaHeart, FaComment, FaPaperPlane, FaBookmark, FaRegBookmark, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, deleteDoc, updateDoc, increment, collection } from "firebase/firestore";
 import { db } from "../../../firebase";
 
 function PostCard({ post }) {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
-  console.log(post)
-  // Fetch user data based on post.userId
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(post.likesCount || 0);
+  
+  const currentUser = JSON.parse(localStorage.getItem("user"));
+
+  // Fetch user data and check if current user liked this post
   useEffect(() => {
-    async function fetchUserData() {
+    async function fetchData() {
       if (!post.userId) {
         setLoading(false);
         return;
       }
       try {
+        // Fetch post author data
         const userRef = doc(db, "user", post.userId);
-        console.log("User Id to fetchh post " , post.userId)
         const userSnap = await getDoc(userRef);
-        console.log("post user snap" , userSnap.data())
         if (userSnap.exists()) {
           setUserData(userSnap.data());
         }
+
+        // Check if current user has liked this post (from likes subcollection)
+        if (currentUser?.uid && post.id) {
+          const likeRef = doc(db, "posts", post.id, "likes", currentUser.uid);
+          const likeSnap = await getDoc(likeRef);
+          setIsLiked(likeSnap.exists());
+        }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     }
-    fetchUserData();
-  }, [post.userId]);
+    fetchData();
+  }, [post.userId, post.id]);
 
   // Carousel navigation
   const graphics = post.graphic || [];
@@ -71,6 +81,34 @@ function PostCard({ post }) {
     ? `${(userData.firstName || "").toLowerCase()}${(userData.lastName || "").toLowerCase()}`
     : "anonymous";
 
+  // Handle like/unlike using subcollection
+  const handleLike = async () => {
+    if (!currentUser?.uid || !post.id) return;
+
+    const likeRef = doc(db, "posts", post.id, "likes", currentUser.uid);
+    const postRef = doc(db, "posts", post.id);
+
+    try {
+      if (isLiked) {
+        // Unlike: remove from subcollection and decrement count
+        await deleteDoc(likeRef);
+        await updateDoc(postRef, { likesCount: increment(-1) });
+        setIsLiked(false);
+        setLikesCount((prev) => Math.max(0, prev - 1));
+      } else {
+        // Like: add to subcollection and increment count
+        await setDoc(likeRef, {
+          userId: currentUser.uid,
+          createdAt: new Date()
+        });
+        await updateDoc(postRef, { likesCount: increment(1) });
+        setIsLiked(true);
+        setLikesCount((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  }
   return (
     <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
       {/* Post Header */}
@@ -195,8 +233,8 @@ function PostCard({ post }) {
       <div className="p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-4">
-            <button className="text-2xl hover:scale-110 transition-transform">
-              {post.isLiked ? (
+            <button className="text-2xl hover:scale-110 transition-transform" onClick={handleLike}>
+              {isLiked ? (
                 <FaHeart className="text-red-500" />
               ) : (
                 <FaRegHeart className="hover:text-neutral-400" />
@@ -219,9 +257,9 @@ function PostCard({ post }) {
         </div>
 
         {/* Likes */}
-        {post.likes > 0 && (
+        {likesCount > 0 && (
           <div className="mb-2">
-            <span className="font-semibold text-sm">{post.likes.toLocaleString()} likes</span>
+            <span className="font-semibold text-sm">{likesCount.toLocaleString()} likes</span>
           </div>
         )}
 
@@ -234,9 +272,9 @@ function PostCard({ post }) {
         )}
 
         {/* View Comments */}
-        {post.comments > 0 && (
+        {post.commentsCount > 0 && (
           <button className="text-sm text-neutral-500 hover:text-neutral-400 mb-2 transition-colors">
-            View all {post.comments} comments
+            View all {post.commentsCount} comments
           </button>
         )}
 

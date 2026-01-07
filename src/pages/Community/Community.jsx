@@ -29,18 +29,17 @@ function Community() {
 
   useEffect(() => {
     async function fetchPosts() {
-      
       const postsRef = collection(db, "posts")
       const q = query(postsRef, orderBy("createdAt", "desc"))
       const postsSnapshot = await getDocs(q)
-      const posts = postsSnapshot.docs.map((doc) => doc.data())
+      const posts = postsSnapshot.docs.map((doc) => ({
+        id: doc.id,  // Include document ID for subcollection references
+        ...doc.data()
+      }))
       console.log(posts)
       setPosts(posts)
-      
     }
     fetchPosts()
-
-
   }, [])
   async function uploadGraphic(file, type) {
     console.log(file)
@@ -61,15 +60,23 @@ function Community() {
 
 
   async function UploadPost() {
-    addDoc(collection(db, "posts"), {
+    const postRef = await addDoc(collection(db, "posts"), {
       title,
       body,
       graphic,
       createdAt: Timestamp.now(),
       userId: currentUser.uid,
-      likes : [] ,
-      comment : []
+      likesCount: 0,
+      commentsCount: 0
     })
+    // Subcollections (likes, comments) will be created automatically 
+    // when the first like/comment document is added
+    console.log("Post created with ID:", postRef.id)
+    
+    // Clear form after upload
+    setTitle("")
+    setBody("")
+    setGraphic([])
   }
 
   // Sample suggestions
