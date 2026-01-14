@@ -9,7 +9,8 @@ function PostCard({ post }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likesCount || 0);
-  
+  const [comments , setComments] = useState([])
+  const [comment , setComment] = useState("")
   const currentUser = JSON.parse(localStorage.getItem("user"));
 
   // Fetch user data and check if current user liked this post
@@ -108,6 +109,19 @@ function PostCard({ post }) {
     } catch (error) {
       console.error("Error toggling like:", error);
     }
+  }
+  const handleAddComment = async (userComment)=>{
+    if(!currentUser.uid || !post.id) return 
+
+    const commentRef = doc(db, "posts", post.id, "comments", currentUser.uid);
+    const postRef = doc(db, "posts", post.id);
+    
+    await setDoc(commentRef, {
+      userId: currentUser.uid,
+      comment: comment,
+      createdAt: new Date()
+    });
+    await updateDoc(postRef, { likesCount: increment(1) });
   }
   return (
     <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
@@ -289,9 +303,12 @@ function PostCard({ post }) {
           <input
             type="text"
             placeholder="Add a comment..."
+            onChange={(e)=>{
+              setComment(e.target.value)
+            }}
             className="flex-1 bg-transparent border-0 outline-none text-sm placeholder-neutral-500 text-white"
           />
-          <button className="text-indigo-400 font-semibold text-sm opacity-50 cursor-not-allowed">
+          <button onClick={handleAddComment} className="text-indigo-400 font-semibold text-sm opacity-50 ">
             Post
           </button>
         </div>
