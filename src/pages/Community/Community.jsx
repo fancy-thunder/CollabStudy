@@ -243,7 +243,16 @@ function Community() {
         {/* Posts Feed */}
         <div className="space-y-6">
           {posts.map((post) => (
-            <PostCard post={post} key={post.id} />
+            <PostCard
+              post={post}
+              key={post.id}
+              currentUserId={currentUser.uid}
+              currentUserName={
+                (userMeta.firstName ? userMeta.firstName : "") +
+                " " +
+                (userMeta.lastName ? userMeta.lastName : "")
+              }
+            />
           ))}
         </div>
       </main>

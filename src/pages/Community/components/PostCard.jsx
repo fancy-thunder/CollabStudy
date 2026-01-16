@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react";
 import { FaRegHeart, FaHeart, FaComment, FaPaperPlane, FaBookmark, FaRegBookmark, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { doc, getDoc, setDoc, deleteDoc, updateDoc, increment, collection } from "firebase/firestore";
+import { doc, getDoc, getDocs, setDoc, deleteDoc, updateDoc, increment, collection, query, orderBy, addDoc } from "firebase/firestore";
 import { db } from "../../../firebase";
 
-function PostCard({ post }) {
+function PostCard({ post, currentUserId, currentUserName }) {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likesCount || 0);
-  const [comments , setComments] = useState([])
-  const [comment , setComment] = useState("")
-  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const [commentsCount, setCommentsCount] = useState(post.commentsCount || 0);
+  const [comments, setComments] = useState([])
+  const [comment, setComment] = useState("")
+  // const currentUser = JSON.parse(localStorage.getItem("user"));
 
   // Fetch user data and check if current user liked this post
   useEffect(() => {
@@ -29,8 +30,8 @@ function PostCard({ post }) {
         }
 
         // Check if current user has liked this post (from likes subcollection)
-        if (currentUser?.uid && post.id) {
-          const likeRef = doc(db, "posts", post.id, "likes", currentUser.uid);
+        if (currentUserId && post.id) {
+          const likeRef = doc(db, "posts", post.id, "likes", currentUserId);
           const likeSnap = await getDoc(likeRef);
           setIsLiked(likeSnap.exists());
         }
@@ -84,9 +85,9 @@ function PostCard({ post }) {
 
   // Handle like/unlike using subcollection
   const handleLike = async () => {
-    if (!currentUser?.uid || !post.id) return;
+    if (!currentUserId || !post.id) return;
 
-    const likeRef = doc(db, "posts", post.id, "likes", currentUser.uid);
+    const likeRef = doc(db, "posts", post.id, "likes", currentUserId);
     const postRef = doc(db, "posts", post.id);
 
     try {
@@ -99,7 +100,7 @@ function PostCard({ post }) {
       } else {
         // Like: add to subcollection and increment count
         await setDoc(likeRef, {
-          userId: currentUser.uid,
+          userId: currentUserId,
           createdAt: new Date()
         });
         await updateDoc(postRef, { likesCount: increment(1) });
@@ -110,19 +111,60 @@ function PostCard({ post }) {
       console.error("Error toggling like:", error);
     }
   }
-  const handleAddComment = async (userComment)=>{
-    if(!currentUser.uid || !post.id) return 
 
-    const commentRef = doc(db, "posts", post.id, "comments", currentUser.uid);
+
+  const handleAddComment = async () => {
+    if (!currentUserId || !post.id || !comment.trim()) return;
+
+    const commentRef = collection(db, "posts", post.id, "comments");
     const postRef = doc(db, "posts", post.id);
-    
-    await setDoc(commentRef, {
-      userId: currentUser.uid,
-      comment: comment,
-      createdAt: new Date()
-    });
-    await updateDoc(postRef, { likesCount: increment(1) });
+
+    try {
+      await addDoc(commentRef, {
+        userId: currentUserId,
+        userName: currentUserName,
+        comment: comment.trim(),
+        createdAt: new Date()
+      });
+      await updateDoc(postRef, { commentsCount: increment(1) });
+      setCommentsCount((prev) => prev + 1);
+      setComment(""); // Clear input after posting
+      getPostsComments(); // Refresh comments
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
   }
+
+  const getPostsComments = async () => {
+    if (!currentUserId || !post.id) return;
+
+    try {
+      // Reference the comments subcollection
+      const commentsRef = collection(db, "posts", post.id, "comments");
+
+      // Query comments ordered by createdAt (newest first)
+      const commentsQuery = query(commentsRef, orderBy("createdAt", "desc"));
+
+      // Fetch all documents from the subcollection
+      const commentsSnapshot = await getDocs(commentsQuery);
+
+      // Map the documents to an array of comment objects
+      const commentsData = commentsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setComments(commentsData);
+
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+
+  useEffect(() => {
+    getPostsComments()
+  }, [])
+
+
   return (
     <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
       {/* Post Header */}
@@ -220,11 +262,10 @@ function PostCard({ post }) {
                 <button
                   key={idx}
                   onClick={() => setCurrentSlide(idx)}
-                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                    idx === currentSlide
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${idx === currentSlide
                       ? "bg-white w-2"
                       : "bg-white/50 hover:bg-white/70"
-                  }`}
+                    }`}
                 />
               ))}
             </div>
@@ -254,9 +295,13 @@ function PostCard({ post }) {
                 <FaRegHeart className="hover:text-neutral-400" />
               )}
             </button>
-            <button className="text-2xl hover:scale-110 transition-transform hover:text-neutral-400">
-              <FaComment />
-            </button>
+            <div className="relative">
+              <button className="text-2xl  hover:scale-110 transition-transform hover:text-neutral-400 flex flex-row items-center justify-center">
+                <FaComment />
+                <p>{commentsCount}</p>
+
+              </button>
+            </div>
             <button className="text-2xl hover:scale-110 transition-transform hover:text-neutral-400">
               <FaPaperPlane />
             </button>
@@ -288,10 +333,28 @@ function PostCard({ post }) {
         {/* View Comments */}
         {post.commentsCount > 0 && (
           <button className="text-sm text-neutral-500 hover:text-neutral-400 mb-2 transition-colors">
-            View all {post.commentsCount} comments
+            View all {commentsCount} comments
           </button>
         )}
-
+        {/* Comments List */}
+        {comments.length > 0 && (
+          <div className="space-y-3 mt-3 max-h-48 overflow-y-auto">
+            {comments.slice(0, 3).map((data) => (
+              <div key={data.id} className="flex items-start gap-2">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+                  {data.userName?.[0]?.toUpperCase() || "?"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-semibold text-sm text-white">{data.userName || "Anonymous"}</span>
+                    <span className="text-[10px] text-neutral-500">{formatTime(data.createdAt)}</span>
+                  </div>
+                  <p className="text-sm text-neutral-300 break-words">{data.comment}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         {/* Timestamp */}
         <div className="text-[11px] text-neutral-500 uppercase tracking-wide mt-2">
           {formatTime(post.createdAt)}
@@ -299,16 +362,24 @@ function PostCard({ post }) {
 
         {/* Comment Input */}
         <div className="flex items-center gap-2 mt-4 pt-4 border-t border-neutral-800">
-          <button className="text-xl">😊</button>
+          <button className="text-xl hover:scale-110 transition-transform">😊</button>
           <input
             type="text"
             placeholder="Add a comment..."
-            onChange={(e)=>{
-              setComment(e.target.value)
-            }}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
             className="flex-1 bg-transparent border-0 outline-none text-sm placeholder-neutral-500 text-white"
           />
-          <button onClick={handleAddComment} className="text-indigo-400 font-semibold text-sm opacity-50 ">
+          <button 
+            onClick={handleAddComment} 
+            disabled={!comment.trim()}
+            className={`font-semibold text-sm transition-all ${
+              comment.trim() 
+                ? "text-indigo-400 hover:text-indigo-300 cursor-pointer" 
+                : "text-indigo-400/50 cursor-not-allowed"
+            }`}
+          >
             Post
           </button>
         </div>
