@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { FaHeart, FaRegHeart, FaComment, FaBookmark, FaRegBookmark, FaHome, FaSearch, FaCompass, FaPlay, FaPaperPlane, FaBell, FaPlusCircle, FaChartBar, FaBars, FaImage, FaVideo } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import AuthContext from "../../context/Auth.jsx";
 import uploadCloudinary from "../../services/cloudinaryUpload.js";
 import { db } from "../../firebase.js";
@@ -309,27 +310,7 @@ function Community() {
           <div className="text-neutral-600 mt-4">© 2025 COLLABSTUDY</div>
         </div>
       </aside>
-
-      {/* Floating Messages Bar */}
-      <div className="fixed bottom-4 right-4 bg-neutral-900 border border-neutral-800 rounded-lg p-4 shadow-lg z-50">
-        <div className="flex items-center gap-3 mb-3">
-          <span className="font-semibold text-sm">Messages</span>
-          <span className="bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">4</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex -space-x-2">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 border-2 border-neutral-900 flex items-center justify-center text-white text-xs font-semibold"
-              >
-                {String.fromCharCode(64 + i)}
-              </div>
-            ))}
-          </div>
-          <span className="text-neutral-400 text-xl">...</span>
-        </div>
-      </div>
+      
     </div>
   );
 }

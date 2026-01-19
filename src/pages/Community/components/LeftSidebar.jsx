@@ -1,7 +1,10 @@
 import { FaHome, FaSearch, FaCompass, FaPlay, FaPaperPlane, FaBell, FaPlusCircle, FaChartBar, FaBars } from "react-icons/fa";
+import {Link} from "react-router-dom";
 
 function LeftSidebar(){
-    return(
+  const user = JSON.parse(localStorage.getItem("user")) || {};
+
+  return(
         <aside className="w-64 border-r border-neutral-800 p-4 fixed left-0 top-0 h-screen overflow-y-auto">
         <div className="mb-8">
           <h1 className="text-2xl font-bold">CollabStudy</h1>
@@ -41,12 +44,12 @@ function LeftSidebar(){
             <FaChartBar className="w-6 h-6" />
             <span className="text-base">Dashboard</span>
           </a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
+          <Link to={`/profile/${user.uid || ""}`} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
             <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
-              U
+              P
             </div>
             <span className="text-base">Profile</span>
-          </a>
+          </Link>
           <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
             <FaBars className="w-6 h-6" />
             <span className="text-base">More</span>
