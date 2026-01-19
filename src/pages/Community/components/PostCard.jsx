@@ -216,8 +216,8 @@ function PostCard({ post, currentUserId, currentUserName }) {
         </div>
       )}
 
-      {/* Media Carousel */}
-      {graphics.length > 0 ? (
+      {/* Media Carousel - Only shown when there's media */}
+      {graphics.length > 0 && (
         <div className="relative w-full aspect-square bg-neutral-800">
           {/* Current Slide */}
           <div className="w-full h-full">
@@ -277,10 +277,6 @@ function PostCard({ post, currentUserId, currentUserName }) {
               {currentSlide + 1}/{graphics.length}
             </div>
           )}
-        </div>
-      ) : (
-        <div className="w-full aspect-[4/3] bg-neutral-800/50 flex items-center justify-center">
-          <div className="text-neutral-600 text-sm">No media</div>
         </div>
       )}
 

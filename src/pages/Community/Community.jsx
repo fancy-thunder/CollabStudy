@@ -16,6 +16,7 @@ function Community() {
   const [posts, setPosts] = useState([])
   const [userMeta, setUserMeta] = useState({})
   const [currentUser , setCurrentUser] = useState({})
+  const [newPostAdded , setNewPostAdded] = useState(false)
   // Get context values with fallback
 
   useEffect(()=>{
@@ -41,7 +42,8 @@ function Community() {
       setPosts(posts)
     }
     fetchPosts()
-  }, [])
+  }, [newPostAdded])
+
   async function uploadGraphic(file, type) {
     console.log(file)
     if (!file) return;
@@ -74,6 +76,7 @@ function Community() {
     // when the first like/comment document is added
     console.log("Post created with ID:", postRef.id)
     
+    setNewPostAdded(!newPostAdded)
     // Clear form after upload
     setTitle("")
     setBody("")
