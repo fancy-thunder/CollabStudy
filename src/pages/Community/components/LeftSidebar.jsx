@@ -1,7 +1,7 @@
 import { FaHome, FaSearch, FaCompass, FaPlay, FaPaperPlane, FaBell, FaPlusCircle, FaChartBar, FaBars } from "react-icons/fa";
 import {Link} from "react-router-dom";
 
-function LeftSidebar(){
+function LeftSidebar({tabSelected, setTabSelected}){
   const user = JSON.parse(localStorage.getItem("user")) || {};
 
   return(
@@ -11,39 +11,60 @@ function LeftSidebar(){
         </div>
 
         <nav className="space-y-1">
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
+          <button onClick={() => setTabSelected("Home")} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors"
+            style={{
+              backgroundColor: tabSelected === "Home" ? "rgba(100, 100, 100, 0.9)" : "transparent",
+              color: tabSelected === "Home" ? "white" : "gray",
+            }}
+          >
             <FaHome className="w-6 h-6" />
             <span className="text-base">Home</span>
-          </a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
+          </button>
+          <button onClick={() => setTabSelected("Search")}  style={{
+              backgroundColor: tabSelected === "Search" ? "rgba(100, 100, 100, 0.9)" : "transparent",
+              color: tabSelected === "Search" ? "white" : "gray",
+            }}
+          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
             <FaSearch className="w-6 h-6" />
             <span className="text-base">Search</span>
-          </a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
+          </button>
+          <button onClick={() => setTabSelected("Explore")}  style={{
+              backgroundColor: tabSelected === "Explore" ? "rgba(100, 100, 100, 0.9)" : "transparent",
+              color: tabSelected === "Explore" ? "white" : "gray",
+            }}
+          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
             <FaCompass className="w-6 h-6" />
             <span className="text-base">Explore</span>
-          </a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
+          </button>
+          <button onClick={() => setTabSelected("Reels")}  style={{
+              backgroundColor: tabSelected === "Reels" ? "rgba(100, 100, 100, 0.9)" : "transparent",
+              color: tabSelected === "Reels" ? "white" : "gray",
+            }}
+          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
             <FaPlay className="w-6 h-6" />
             <span className="text-base">Reels</span>
-          </a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors relative">
+          </button> 
+          <button onClick={() => setTabSelected("Messages")}  style={{
+              backgroundColor: tabSelected === "Messages" ? "rgba(100, 100, 100, 0.9)" : "transparent",
+              color: tabSelected === "Messages" ? "white" : "gray",
+            }}
+          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors relative">
             <FaPaperPlane className="w-6 h-6" />
             <span className="text-base">Messages</span>
             <span className="absolute left-6 top-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">4</span>
-          </a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
+          </button>
+          <button onClick={() => setTabSelected("Notifications")} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
             <FaBell className="w-6 h-6" />
             <span className="text-base">Notifications</span>
-          </a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
+          </button>
+          <button onClick={() => setTabSelected("Create")} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
             <FaPlusCircle className="w-6 h-6" />
             <span className="text-base">Create</span>
-          </a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
+          </button>
+          <button onClick={() => setTabSelected("Dashboard")} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
             <FaChartBar className="w-6 h-6" />
             <span className="text-base">Dashboard</span>
-          </a>
+          </button>
           <Link to={`/profile/${user.uid || ""}`} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
             <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
               P
