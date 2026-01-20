@@ -1,6 +1,31 @@
 # CollabStudy - Work Progress
 
-## Latest Update: Comments UI/UX Improvements
+## Latest Update: Search with Debouncing & OR Query
+
+### Changes Made
+- **Search.jsx**: Firestore search with proper debouncing
+  - Uses `or()` query to search by firstName OR lastName
+  - 400ms debounce with cleanup (`clearTimeout`) to prevent multiple API calls
+  - Returns only `id`, `firstName`, `lastName`, `imageUrl`
+
+---
+
+## Previous Update: Instagram-Style Search Page UI
+
+### Changes Made
+- **Search.jsx**: Created Instagram-inspired search UI component
+  - Search input with gradient glow effect on hover
+  - Tab navigation (Top, Accounts, Tags) with animated underline
+  - Recent searches section with remove & clear all functionality
+  - Trending topics with emoji icons and post counts
+  - Suggested accounts with avatars, verified badges, and follow buttons
+  - Gradient avatars with user initials
+  - Smooth hover transitions and animations
+  - Pure UI component (no Firebase logic)
+
+---
+
+## Previous Update: Comments UI/UX Improvements
 
 ### Changes Made
 - **PostCard.jsx**: Fixed comment functionality and improved design
