@@ -9,6 +9,7 @@ function PostCard({ post, currentUserId, currentUserName }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likesCount || 0);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const [commentsCount, setCommentsCount] = useState(post.commentsCount || 0);
   const [comments, setComments] = useState([])
   const [comment, setComment] = useState("")
@@ -34,6 +35,10 @@ function PostCard({ post, currentUserId, currentUserName }) {
           const likeRef = doc(db, "posts", post.id, "likes", currentUserId);
           const likeSnap = await getDoc(likeRef);
           setIsLiked(likeSnap.exists());
+          // Check bookmark status (bookmarks subcollection)
+          const bookmarkRef = doc(db, "posts", post.id, "bookmarks", currentUserId);
+          const bookmarkSnap = await getDoc(bookmarkRef);
+          setIsBookmarked(bookmarkSnap.exists());
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -109,6 +114,30 @@ function PostCard({ post, currentUserId, currentUserName }) {
       }
     } catch (error) {
       console.error("Error toggling like:", error);
+    }
+  }
+
+  // Handle bookmark/unbookmark using subcollection similar to likes
+  const handleBookmark = async () => {
+    if (!currentUserId || !post.id) return;
+
+    const bookmarkRef = doc(db, "posts", post.id, "bookmarks", currentUserId);
+
+    try {
+      if (isBookmarked) {
+        // Remove bookmark
+        await deleteDoc(bookmarkRef);
+        setIsBookmarked(false);
+      } else {
+        // Add bookmark
+        await setDoc(bookmarkRef, {
+          userId: currentUserId,
+          createdAt: new Date()
+        });
+        setIsBookmarked(true);
+      }
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
     }
   }
 
@@ -306,8 +335,8 @@ function PostCard({ post, currentUserId, currentUserName }) {
               <FaPaperPlane />
             </button>
           </div>
-          <button className="text-2xl hover:scale-110 transition-transform">
-            {post.isBookmarked ? (
+          <button className="text-2xl hover:scale-110 transition-transform" onClick={handleBookmark}>
+            {isBookmarked ? (
               <FaBookmark className="text-white" />
             ) : (
               <FaRegBookmark className="hover:text-neutral-400" />
