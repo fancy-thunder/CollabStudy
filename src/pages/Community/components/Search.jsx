@@ -6,6 +6,7 @@ import { collection, query, where, getDocs, or } from "firebase/firestore";
 function Search() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("top");
+  const [users, setUsers] = useState([]);
 
 
   useEffect(() => {
@@ -19,15 +20,17 @@ function Search() {
       ));
       const querySnapshot = await getDocs(q);
 
-      // Extract only userId and name from the results
-      const users = querySnapshot.docs.map((doc) => ({
-        id: doc.id, // Document ID from Firestore
+      // Extract useful fields from the results
+      const fetchedUsers = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
         firstName: doc.data().firstName,
         lastName: doc.data().lastName,
-        imageUrl: doc.data().imageUrl,
+        username: doc.data().username || `${doc.data().firstName?.toLowerCase() || "user"}_${doc.id.slice(0, 5)}`,
+        imageUrl: doc.data().imageUrl || null,
+        bio: doc.data().bio || "",
       }));
 
-      console.log(users);
+      setUsers(fetchedUsers);
     }
 
     const timeoutId = setTimeout(fetchUsers, 400);
@@ -126,9 +129,9 @@ function Search() {
               Clear all
             </button>
           </div>
-          {recentSearches.map((item, idx) => (
+          {recentSearches.map((item, i) => (
             <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-900 transition-all group cursor-pointer">
-              <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${gradients[idx % gradients.length]} flex items-center justify-center text-white font-semibold text-sm`}>
+              <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${gradients[i % gradients.length]} flex items-center justify-center text-white font-semibold text-sm`}>
                 {item.type === "tag" ? <FaHashtag className="w-4 h-4" /> : getInitials(item.name)}
               </div>
               <div className="flex-1 min-w-0">
@@ -142,27 +145,6 @@ function Search() {
           ))}
         </div>
 
-        {/* Trending Topics */}
-        {activeTab !== "accounts" && (
-          <div className="space-y-2">
-            <h3 className="text-white font-semibold px-1 flex items-center gap-2">
-              <span className="text-lg">🔥</span>
-              Trending Topics
-            </h3>
-            {trendingTopics.map((topic, idx) => (
-              <div key={topic.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-900 transition-all cursor-pointer group">
-                <div className="w-11 h-11 rounded-xl bg-neutral-800 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
-                  {topic.icon}
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-white">#{topic.tag}</p>
-                  <p className="text-sm text-neutral-500">{topic.posts}</p>
-                </div>
-                <div className="text-neutral-600 text-sm font-medium">#{idx + 1}</div>
-              </div>
-            ))}
-          </div>
-        )}
 
         {/* Suggested Accounts */}
         {activeTab !== "tags" && (
@@ -171,6 +153,34 @@ function Search() {
               <FaUser className="w-4 h-4 text-neutral-400" />
               Suggested for you
             </h3>
+
+            {/* Search results from Firestore */}
+            {users && users.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-neutral-300 text-sm px-1">Search Results</h4>
+                {users.map((user, idx) => (
+                  <div key={user.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-900 transition-all cursor-pointer group">
+                    {user.imageUrl ? (
+                      <img src={user.imageUrl} alt={`${user.firstName} ${user.lastName}`} className="w-12 h-12 rounded-full object-cover" />
+                    ) : (
+                      <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${gradients[idx % gradients.length]} flex items-center justify-center text-white font-bold shadow-lg group-hover:shadow-xl transition-shadow`}>
+                        {getInitials(`${user.firstName} ${user.lastName}`)}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-semibold text-white truncate">{user.firstName} {user.lastName}</span>
+                        <span className="text-sm text-neutral-500 truncate">@{user.username}</span>
+                      </div>
+                      {user.bio && <p className="text-sm text-neutral-400 truncate">{user.bio}</p>}
+                    </div>
+                    <button className="px-4 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white text-sm font-semibold rounded-lg transition-all hover:shadow-lg hover:shadow-indigo-500/25">
+                      Follow
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
             {suggestedAccounts.map((account, idx) => (
               <div key={account.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-900 transition-all cursor-pointer group">
                 <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${gradients[idx % gradients.length]} flex items-center justify-center text-white font-bold shadow-lg group-hover:shadow-xl transition-shadow`}>
