@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { FaSearch, FaTimes, FaHashtag, FaUser, FaHistory } from "react-icons/fa";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { db } from "../../../firebase";
 import { collection, query, where, getDocs, or } from "firebase/firestore";
 function Search() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("top");
   const [users, setUsers] = useState([]);
+
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -159,7 +162,11 @@ function Search() {
               <div className="space-y-2">
                 <h4 className="text-neutral-300 text-sm px-1">Search Results</h4>
                 {users.map((user, idx) => (
-                  <div key={user.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-900 transition-all cursor-pointer group">
+                  <div
+                    key={user.id}
+                    onClick={() => navigate(`/profile/${user.id}`)}
+                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-900 transition-all cursor-pointer group"
+                  >
                     {user.imageUrl ? (
                       <img src={user.imageUrl} alt={`${user.firstName} ${user.lastName}`} className="w-12 h-12 rounded-full object-cover" />
                     ) : (
@@ -174,7 +181,10 @@ function Search() {
                       </div>
                       {user.bio && <p className="text-sm text-neutral-400 truncate">{user.bio}</p>}
                     </div>
-                    <button className="px-4 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white text-sm font-semibold rounded-lg transition-all hover:shadow-lg hover:shadow-indigo-500/25">
+                    <button
+                      onClick={(e) => e.stopPropagation()}
+                      className="px-4 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white text-sm font-semibold rounded-lg transition-all hover:shadow-lg hover:shadow-indigo-500/25"
+                    >
                       Follow
                     </button>
                   </div>
