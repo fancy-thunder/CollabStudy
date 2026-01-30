@@ -1,6 +1,25 @@
 # CollabStudy - Work Progress
 
-## Latest Update: Search with Debouncing & OR Query
+## Latest Update: White Screen Bug Fix
+
+### Issue
+- App showing white/blank screen on all routes
+
+### Root Causes & Fixes
+1. **Vite Cache Corruption**: Dependency chunk (`chunk-BQYK6RGN.js`) returning 504 error
+   - **Fix**: Cleared `node_modules/.vite` cache and restarted dev server
+
+2. **Null Reference Error in Community.jsx**: `TypeError: Cannot read properties of null (reading 'email')`
+   - **Cause**: Accessing `currentUser.email` and `userMeta` properties without null checks when user not logged in
+   - **Fix**: Added optional chaining (`?.`) to prevent crashes:
+     - `currentUser.email` → `currentUser?.email`
+     - `currentUser.uid` → `currentUser?.uid`
+     - `userMeta.firstName` → `userMeta?.firstName`
+     - `userMeta.lastName` → `userMeta?.lastName`
+
+---
+
+## Previous Update: Search with Debouncing & OR Query
 
 ### Changes Made
 - **Search.jsx**: Firestore search with proper debouncing

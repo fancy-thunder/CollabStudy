@@ -262,11 +262,11 @@ function Community() {
                 <PostCard
                   post={post}
                   key={post.id}
-                  currentUserId={currentUser.uid}
+                  currentUserId={currentUser?.uid}
                   currentUserName={
-                    (userMeta.firstName ? userMeta.firstName : "") +
+                    (userMeta?.firstName || "") +
                     " " +
-                    (userMeta.lastName ? userMeta.lastName : "")
+                    (userMeta?.lastName || "")
                   }
                 />
               ))}
@@ -308,12 +308,12 @@ function Community() {
             </div>
             <div>
               <div className="font-semibold text-sm flex items-center gap-1">
-                {currentUser.email || "your_username"}
+                {currentUser?.email || "your_username"}
                 <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div className="text-sm text-neutral-400">{userMeta.firstName + userMeta.lastName || "Your Name"}</div>
+              <div className="text-sm text-neutral-400">{(userMeta?.firstName || "") + " " + (userMeta?.lastName || "") || "Your Name"}</div>
             </div>
           </div>
           <button className="text-indigo-400 text-sm font-semibold">Switch</button>
