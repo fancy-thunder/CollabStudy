@@ -1,6 +1,35 @@
 # CollabStudy - Work Progress
 
-## Latest Update: White Screen Bug Fix
+## Latest Update: Follow System (Same Pattern as Likes)
+
+### Analysis: Like System (PostCard.jsx)
+- **State:** `isLiked`, `likesCount` (from post)
+- **Data:** Subcollection `posts/{postId}/likes/{userId}`; post doc has `likesCount`
+- **On load:** `getDoc(likes/{currentUserId})` → `setIsLiked(snap.exists())`
+- **Toggle:** `setDoc`/`deleteDoc` on like doc + `updateDoc(postRef, { likesCount: increment(±1) })`
+
+### Follow System (Profile.jsx) – Implemented Same Way
+- **State:** `isFollowing`, `followersCount` (from profile)
+- **Data:** Subcollections `user/{profileUserId}/followers/{currentUserId}` and `user/{currentUserId}/following/{profileUserId}`; user docs have `followersCount` / `followingCount`
+- **On load:** `getDoc(user/{profileUserId}/followers/{currentUserId})` → `setIsFollowing(snap.exists())`; `followersCount` from `profile.followersCount ?? safeCount(profile.followers)`
+- **Toggle:** `setDoc`/`deleteDoc` on both subcollections + `updateDoc` on both user docs with `increment(±1)`
+- **UI:** Follow button shows "Follow" / "Following"; hidden on own profile (`currentUserId === profileUserId`)
+
+### Firestore Structure (Follow)
+```
+user (collection)
+  └── {userId} (document)
+        ├── followersCount: number
+        ├── followingCount: number
+        ├── followers (subcollection)
+        │     └── {followerId} (document) { userId, createdAt }
+        └── following (subcollection)
+              └── {followingId} (document) { userId, createdAt }
+```
+
+---
+
+## Previous Update: White Screen Bug Fix
 
 ### Issue
 - App showing white/blank screen on all routes

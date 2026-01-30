@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, deleteDoc, updateDoc, increment } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useParams } from "react-router-dom";
 import { FaCheckCircle } from "react-icons/fa";
@@ -27,22 +27,47 @@ function fmtDate(d) {
   }
 }
 
+// Resolve current user id: AuthContext (set on SignIn) or localStorage (persists after refresh)
+function useCurrentUserId() {
+  const { userId: contextUserId } = useContext(AuthContext);
+  const [localUserId, setLocalUserId] = useState(null);
+  useEffect(() => {
+    try {
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        if (user?.uid) setLocalUserId(user.uid);
+      }
+    } catch (_) {}
+  }, []);
+  return contextUserId || localUserId;
+}
+
 const Profile = () => {
-  const { userId } = useParams();
-  const {setUserDisplayName} = useContext(AuthContext)
+  const { userId: profileUserId } = useParams();
+  const { setUserDisplayName } = useContext(AuthContext);
+  const currentUserId = useCurrentUserId();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("posts"); // posts | achievements | activity
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followersCount, setFollowersCount] = useState(0);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       setLoading(true);
       try {
-        const docRef = doc(db, "user", userId);
+        const docRef = doc(db, "user", profileUserId);
         const snap = await getDoc(docRef);
-        setUserDisplayName(snap.data().firstName + " " + snap.data().lastName);
-        setProfile(snap.exists() ? snap.data() : null);
-        localStorage.setItem("usermeta" , JSON.stringify(snap.data()));
+        if (snap.exists()) {
+          const data = snap.data();
+          setProfile(data);
+          setUserDisplayName(data.firstName + " " + data.lastName);
+          setFollowersCount(data.followersCount ?? safeCount(data.followers) ?? 0);
+          localStorage.setItem("usermeta", JSON.stringify(data));
+        } else {
+          setProfile(null);
+        }
       } catch (e) {
         console.error("Error fetching user profile", e);
         setProfile(null);
@@ -50,8 +75,23 @@ const Profile = () => {
         setLoading(false);
       }
     };
-    if (userId) fetchUserProfile();
-  }, [userId]);
+    if (profileUserId) fetchUserProfile();
+  }, [profileUserId]);
+
+  // Check if current user follows this profile (same pattern as PostCard likes)
+  useEffect(() => {
+    async function checkFollowStatus() {
+      if (!currentUserId || !profileUserId || currentUserId === profileUserId) return;
+      try {
+        const followersRef = doc(db, "user", profileUserId, "followers", currentUserId);
+        const snap = await getDoc(followersRef);
+        setIsFollowing(snap.exists());
+      } catch (e) {
+        console.error("Error checking follow status", e);
+      }
+    }
+    checkFollowStatus();
+  }, [currentUserId, profileUserId]);
 
   if (loading) {
     return (
@@ -83,7 +123,7 @@ const Profile = () => {
 
   const stats = [
     { label: "Posts", value: p.postsCount ?? 0 },
-    { label: "Followers", value: safeCount(p.followers) },
+    { label: "Followers", value: followersCount },
     { label: "Following", value: safeCount(p.following) },
   ];
 
@@ -96,6 +136,43 @@ const Profile = () => {
   const lastLogin = fmtDate(p.lastLogin);
   const lastRevisionDate = fmtDate(p.lastRevisionDate);
 
+  // Follow/unfollow using subcollections + count (same pattern as PostCard likes)
+  const handleFollow = async () => {
+    if (!currentUserId || !profileUserId || currentUserId === profileUserId) return;
+
+    const followersRef = doc(db, "user", profileUserId, "followers", currentUserId);
+    const followingRef = doc(db, "user", currentUserId, "following", profileUserId);
+    const profileUserRef = doc(db, "user", profileUserId);
+    const currentUserRef = doc(db, "user", currentUserId);
+
+    try {
+      if (isFollowing) {
+        await deleteDoc(followersRef);
+        await deleteDoc(followingRef);
+        await updateDoc(profileUserRef, { followersCount: increment(-1) });
+        const curSnap = await getDoc(currentUserRef);
+        if (curSnap.exists()) await updateDoc(currentUserRef, { followingCount: increment(-1) });
+        setIsFollowing(false);
+        setFollowersCount((prev) => Math.max(0, prev - 1));
+      } else {
+        await setDoc(followersRef, { userId: currentUserId, createdAt: new Date() });
+        await setDoc(followingRef, { userId: profileUserId, createdAt: new Date() });
+        await updateDoc(profileUserRef, { followersCount: increment(1) });
+        const curSnap = await getDoc(currentUserRef);
+        if (curSnap.exists()) {
+          await updateDoc(currentUserRef, { followingCount: increment(1) });
+        } else {
+          await setDoc(currentUserRef, { followingCount: 1 }, { merge: true });
+        }
+        setIsFollowing(true);
+        setFollowersCount((prev) => prev + 1);
+      }
+    } catch (e) {
+      console.error("Error toggling follow", e);
+    }
+  };
+
+  const isOwnProfile = currentUserId === profileUserId;
   return (
     <div className={`${bg} min-h-screen`}>
       <Navbar />
@@ -152,9 +229,18 @@ const Profile = () => {
 
                 {/* Actions (Instagram‑like) */}
                 <div className="mt-3 flex items-center gap-2">
-                  <button className="px-3 py-1.5 text-sm rounded-md border border-neutral-300/60 dark:border-neutral-700/80 hover:bg-neutral-100 dark:hover:bg-neutral-800">
-                    Follow
-                  </button>
+                  {!isOwnProfile && (
+                    <button
+                      onClick={handleFollow}
+                      className={`px-3 py-1.5 text-sm rounded-md border ${
+                        isFollowing
+                          ? "border-neutral-300/60 dark:border-neutral-700/80 bg-neutral-100 dark:bg-neutral-800"
+                          : "border-neutral-300/60 dark:border-neutral-700/80 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      }`}
+                    >
+                      {isFollowing ? "Following" : "Follow"}
+                    </button>
+                  )}
                   <button className="px-3 py-1.5 text-sm rounded-md border border-neutral-300/60 dark:border-neutral-700/80 hover:bg-neutral-100 dark:hover:bg-neutral-800">
                     Message
                   </button>
