@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaSearch, FaTimes, FaHashtag, FaUser, FaHistory } from "react-icons/fa";
+import { FaSearch, FaTimes, FaHashtag, FaUser } from "react-icons/fa";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../../firebase";
@@ -41,20 +41,7 @@ function Search() {
     // Cleanup: cancel pending timeout when searchQuery changes
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
-  // Sample data for UI display
-  const recentSearches = [
-    { id: 1, type: "user", name: "Alex Johnson", username: "alex_codes", avatar: null },
-    { id: 2, type: "tag", name: "#studygroup", username: "2.4K posts" },
-    { id: 3, type: "user", name: "Sarah Miller", username: "sarah_learns", avatar: null },
-  ];
-
-  const trendingTopics = [
-    { id: 1, tag: "studygroup", posts: "12.4K posts", icon: "🎓" },
-    { id: 2, tag: "examprep", posts: "8.2K posts", icon: "📚" },
-    { id: 3, tag: "coding", posts: "45.1K posts", icon: "💻" },
-    { id: 4, tag: "mathematics", posts: "6.8K posts", icon: "📐" },
-    { id: 5, tag: "physics", posts: "5.3K posts", icon: "⚛️" },
-  ];
+  // Removed sample UI data (recent searches & trending topics)
 
   const suggestedAccounts = [
     { id: 1, username: "study_master", name: "Study Master", isVerified: true, followers: "24.5K", bio: "Helping students ace their exams 📖" },
@@ -121,32 +108,7 @@ function Search() {
 
       {/* Content */}
       <div className="mt-4 space-y-6">
-        {/* Recent Searches */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between px-1">
-            <h3 className="text-white font-semibold flex items-center gap-2">
-              <FaHistory className="w-4 h-4 text-neutral-400" />
-              Recent
-            </h3>
-            <button className="text-indigo-400 text-sm font-semibold hover:text-indigo-300 transition-colors">
-              Clear all
-            </button>
-          </div>
-          {recentSearches.map((item, i) => (
-            <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-900 transition-all group cursor-pointer">
-              <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${gradients[i % gradients.length]} flex items-center justify-center text-white font-semibold text-sm`}>
-                {item.type === "tag" ? <FaHashtag className="w-4 h-4" /> : getInitials(item.name)}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-white truncate">{item.username || item.name}</p>
-                <p className="text-sm text-neutral-500 truncate">{item.name}</p>
-              </div>
-              <button className="opacity-0 group-hover:opacity-100 p-2 text-neutral-400 hover:text-white transition-all">
-                <FaTimes className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          ))}
-        </div>
+        {/* Recent searches removed (dummy data) */}
 
 
         {/* Suggested Accounts */}
@@ -181,12 +143,6 @@ function Search() {
                       </div>
                       {user.bio && <p className="text-sm text-neutral-400 truncate">{user.bio}</p>}
                     </div>
-                    <button
-                      onClick={(e) => e.stopPropagation()}
-                      className="px-4 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white text-sm font-semibold rounded-lg transition-all hover:shadow-lg hover:shadow-indigo-500/25"
-                    >
-                      Follow
-                    </button>
                   </div>
                 ))}
               </div>
@@ -208,9 +164,7 @@ function Search() {
                   <p className="text-sm text-neutral-400 truncate">{account.name}</p>
                   <p className="text-xs text-neutral-500 truncate">{account.bio}</p>
                 </div>
-                <button className="px-4 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white text-sm font-semibold rounded-lg transition-all hover:shadow-lg hover:shadow-indigo-500/25">
-                  Follow
-                </button>
+                {/* Follow button removed for suggested accounts */}
               </div>
             ))}
           </div>

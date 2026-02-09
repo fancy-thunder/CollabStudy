@@ -316,7 +316,6 @@ function Community() {
               <div className="text-sm text-neutral-400">{(userMeta?.firstName || "") + " " + (userMeta?.lastName || "") || "Your Name"}</div>
             </div>
           </div>
-          <button className="text-indigo-400 text-sm font-semibold">Switch</button>
         </div>
 
         {/* Suggestions */}
