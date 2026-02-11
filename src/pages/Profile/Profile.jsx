@@ -64,7 +64,14 @@ const Profile = () => {
           setProfile(data);
           setUserDisplayName(data.firstName + " " + data.lastName);
           setFollowersCount(data.followersCount ?? safeCount(data.followers) ?? 0);
-          localStorage.setItem("usermeta", JSON.stringify(data));
+          // Only persist usermeta when viewing your own profile
+          if (profileUserId === currentUserId) {
+            try {
+              localStorage.setItem("usermeta", JSON.stringify(data));
+            } catch (e) {
+              console.warn("Could not persist usermeta to localStorage", e);
+            }
+          }
         } else {
           setProfile(null);
         }
@@ -76,7 +83,7 @@ const Profile = () => {
       }
     };
     if (profileUserId) fetchUserProfile();
-  }, [profileUserId]);
+  }, [profileUserId, currentUserId]);
 
   // Check if current user follows this profile (same pattern as PostCard likes)
   useEffect(() => {
