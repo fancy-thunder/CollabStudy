@@ -124,7 +124,7 @@ const Profile = () => {
   const stats = [
     { label: "Posts", value: p.postsCount ?? 0 },
     { label: "Followers", value: followersCount },
-    { label: "Following", value: safeCount(p.following) },
+    { label: "Following", value: p.followingCount ?? safeCount(p.following) ?? 0 },
   ];
 
   const education = [p.degreeOrClass, p.fieldOfStudy, p.institutionName]
@@ -167,6 +167,20 @@ const Profile = () => {
         setIsFollowing(true);
         setFollowersCount((prev) => prev + 1);
       }
+        // Refresh current user meta in localStorage so other UI shows updated followingCount
+        try {
+          const updatedCurSnap = await getDoc(currentUserRef);
+          if (updatedCurSnap.exists()) {
+            const updatedCurData = updatedCurSnap.data();
+            try {
+              localStorage.setItem("usermeta", JSON.stringify(updatedCurData));
+            } catch (e) {
+              console.warn("Could not persist usermeta to localStorage", e);
+            }
+          }
+        } catch (e) {
+          console.warn("Failed to refresh current user meta after follow toggle", e);
+        }
     } catch (e) {
       console.error("Error toggling follow", e);
     }
