@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db, auth } from "../../../firebase";
 import {
   FaUsers,
   FaPlus,
@@ -144,23 +146,38 @@ function Group() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createForm, setCreateForm] = useState({ name: "", bio: "", isPrivate: false });
 
-  const handleCreateGroup = (e) => {
+  const handleCreateGroup = async (e) => {
     e?.preventDefault();
     const name = createForm.name.trim();
     if (!name) return;
-    const id = `new-${Date.now()}`;
-    const seed = name.replace(/\s+/g, "").slice(0, 8) || id;
-    const newGroup = {
-      id,
+    const idSeed = name.replace(/\s+/g, "").slice(0, 8) || `g-${Date.now()}`;
+    const imageUrl = `https://api.dicebear.com/7.x/identicon/svg?seed=${idSeed}`;
+
+    const groupData = {
       name,
       bio: createForm.bio.trim() || "No description yet.",
-      imageUrl: `https://api.dicebear.com/7.x/identicon/svg?seed=${seed}`,
+      imageUrl,
       memberCount: 1,
       isPrivate: !!createForm.isPrivate,
+      createdAt: serverTimestamp(),
+      createdBy: auth?.currentUser?.uid || null,
     };
-    setMyGroups((prev) => [newGroup, ...prev]);
-    setCreateForm({ name: "", bio: "", isPrivate: false });
-    setShowCreateModal(false);
+
+    try {
+      const docRef = await addDoc(collection(db, "groups"), groupData);
+      const newGroup = {
+        id: docRef.id,
+        ...groupData,
+        // Firestore serverTimestamp() is an object; keep a sensible default for UI
+        createdAt: new Date().toISOString(),
+      };
+      setMyGroups((prev) => [newGroup, ...prev]);
+      setCreateForm({ name: "", bio: "", isPrivate: false });
+      setShowCreateModal(false);
+    } catch (err) {
+      console.error("Failed to create group:", err);
+      alert("Unable to create group. Please try again later.");
+    }
   };
 
   const handleLeave = (group) => {
