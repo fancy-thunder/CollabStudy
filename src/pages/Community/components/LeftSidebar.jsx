@@ -57,9 +57,14 @@ function LeftSidebar({tabSelected, setTabSelected}){
             <FaBell className="w-6 h-6" />
             <span className="text-base">Notifications</span>
           </button>
-          <button onClick={() => setTabSelected("Create")} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
+          <button onClick={() => setTabSelected("Group")} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors"
+            style={{
+              backgroundColor: tabSelected === "Group" ? "rgba(100, 100, 100, 0.9)" : "transparent",
+              color: tabSelected === "Group" ? "white" : "gray",
+            }}
+          >
             <FaPlusCircle className="w-6 h-6" />
-            <span className="text-base">Create</span>
+            <span className="text-base">Groups</span>
           </button>
           <button onClick={() => setTabSelected("Dashboard")} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors">
             <FaChartBar className="w-6 h-6" />
