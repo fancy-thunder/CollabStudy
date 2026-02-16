@@ -13,7 +13,7 @@ import Explore from "./components/Explore.jsx";
 import Reels from "./components/Reels.jsx";
 import Messages from "./components/Message.jsx";
 import Notifications from "./components/Notification.jsx";
-import Create from "./components/Create.jsx";
+import Group from "./components/Group.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 function Community() {
   // Sample posts data
@@ -290,7 +290,7 @@ function Community() {
           tabSelected == "Notifications" && <Notifications />
         }
         {
-          tabSelected == "Create" && <Create />
+          tabSelected == "Group" && <Group />
         }
         {
           tabSelected == "Dashboard" && <Dashboard />

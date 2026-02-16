@@ -1,6 +1,23 @@
 # CollabStudy - Work Progress
 
-## Latest Update: Follow System (Same Pattern as Likes)
+## Latest Update: Groups Section UI (Community)
+
+### Group.jsx
+- **Header:** "Groups" title + **Create group** (outline) + **Join a group** (gradient) buttons.
+- **Create group:** Opens modal with form: name (required), bio, private (checkbox). Submit adds new group to "Your groups" with auto avatar (DiceBear seed from name). Empty state also has "Create group" + "Find groups".
+- **Your groups:** Cards for each group the user is in: group avatar (image or initial), name, bio (2-line clamp), member count, private icon; **Open** (primary) and **Leave** (secondary) actions.
+- **Discover more:** Same card style for groups not joined; **Join** button adds group to "Your groups" and removes from discover.
+- **Empty state:** When no groups, message + "Find groups" CTA.
+- **Join modal:** Overlay listing discoverable groups (avatar, name, member count, Join). Closing on backdrop click.
+- Mock data used (MOCK_MY_GROUPS, MOCK_DISCOVER); ready to swap for Firestore later.
+
+### Community.jsx & LeftSidebar
+- Community: import fixed to `Group` from `./components/Group.jsx` (was `Create`).
+- LeftSidebar: Groups button sets `tabSelected="Group"` and uses same active style as other nav items.
+
+---
+
+## Previous Update: Follow System (Same Pattern as Likes)
 
 ### Analysis: Like System (PostCard.jsx)
 - **State:** `isLiked`, `likesCount` (from post)
