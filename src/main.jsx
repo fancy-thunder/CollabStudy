@@ -11,6 +11,7 @@ import Profile from './pages/Profile/Profile.jsx'
 import { AuthProvider } from './context/Auth.jsx'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Community from './pages/Community/Community.jsx'
+import GroupPage from './pages/Community/components/GroupPage.jsx'
 import { ToastContainer, toast } from 'react-toastify';
 import { useContext } from 'react'
 import AuthContext from './context/Auth.jsx'
@@ -42,6 +43,11 @@ const router = createBrowserRouter([
   {
     path : "/community",
     element : <Community />
+  }
+  ,
+  {
+    path: "/community/group/:groupId",
+    element: <GroupPage />,
   }
 ]);
 

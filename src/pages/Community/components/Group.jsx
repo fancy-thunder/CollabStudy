@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import { collection, addDoc, serverTimestamp, getDocs, getDoc, doc } from "firebase/firestore";
 import { db, auth } from "../../../firebase";
 import {
   FaUsers,
@@ -10,6 +10,7 @@ import {
   FaUserFriends,
   FaPlusCircle,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 // Mock data – replace with Firestore when backend is ready
 const MOCK_MY_GROUPS = [
@@ -192,6 +193,31 @@ function Group() {
     setShowJoinModal(false);
   };
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchAllGroups = async () => {
+      try {
+        const snap = await getDocs(collection(db, "groups"));
+        const docs = snap.docs;
+        const fetched = await Promise.all(
+          docs.map(async (dRef) => {
+            const full = await getDoc(doc(db, "groups", dRef.id));
+            return { id: full.id, ...full.data() };
+          })
+        );
+        // show all fetched groups under "Your groups"
+        setMyGroups(fetched);
+        setAllGroups(fetched);
+        setDiscoverGroups([]);
+      } catch (err) {
+        console.error("Failed to fetch groups via getDoc:", err);
+      }
+    };
+
+    fetchAllGroups();
+  }, []);
+
   return (
     <div className="space-y-8">
       {/* Header + CTAs */}
@@ -247,12 +273,12 @@ function Group() {
           <div className="space-y-4">
             {myGroups.map((group) => (
               <GroupCard
-                key={group.id}
-                group={group}
-                variant="member"
-                onOpen={(g) => console.log("Open group", g)}
-                onLeave={handleLeave}
-              />
+                  key={group.id}
+                  group={group}
+                  variant="member"
+                  onOpen={(g) => navigate(`/community/group/${g.id}`)}
+                  onLeave={handleLeave}
+                />
             ))}
           </div>
         )}
