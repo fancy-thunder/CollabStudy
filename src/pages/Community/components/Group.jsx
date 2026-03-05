@@ -147,6 +147,26 @@ function Group() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createForm, setCreateForm] = useState({ name: "", bio: "", isPrivate: false });
 
+  // handleGroupSubscribe adds the current user as a member to the specified group in Firestore
+  
+  const handleGroupSubscribe = async (groupId) => {
+    try {
+      const uid = auth?.currentUser?.uid || null;
+      if (!uid) return;
+
+      const memberData = {
+        userId: uid,
+        userName: JSON.parse(localStorage.getItem("usermeta")).firstName,
+        joinedAt: serverTimestamp(),
+        isAdmin: true,
+      };
+
+      await addDoc(collection(db, "groups", groupId, "members"), memberData);
+    } catch (err) {
+      console.error("Failed to add group member document:", err);
+    }
+  };
+
   const handleCreateGroup = async (e) => {
     e?.preventDefault();
     const name = createForm.name.trim();
@@ -173,6 +193,8 @@ function Group() {
         createdAt: new Date().toISOString(),
       };
       setMyGroups((prev) => [newGroup, ...prev]);
+      // Add the creating user as a member with admin rights for this group
+      await handleGroupSubscribe(docRef.id);
       setCreateForm({ name: "", bio: "", isPrivate: false });
       setShowCreateModal(false);
     } catch (err) {

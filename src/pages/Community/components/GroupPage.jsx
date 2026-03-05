@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { doc, getDoc, collection, addDoc, query, where, getDocs, Timestamp , setDoc } from "firebase/firestore";
+import { doc, getDoc, collection, addDoc, query, where, getDocs, Timestamp , setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../../firebase";
 import { FaArrowLeft, FaCog, FaUserFriends } from "react-icons/fa";
 
@@ -32,6 +32,23 @@ export default function GroupPage() {
     };
 
     fetch();
+  }, [groupId]);
+
+  // check if current user is a member of this group
+  useEffect(() => {
+    const checkMembership = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user?.uid) return;
+        const memRef = doc(db, "groups", groupId, "members", user.uid);
+        const memSnap = await getDoc(memRef);
+        setSubscribed(!!memSnap.exists());
+      } catch (err) {
+        console.error("Failed to check membership:", err);
+      }
+    };
+
+    checkMembership();
   }, [groupId]);
 
   useEffect(() => {
@@ -79,14 +96,30 @@ export default function GroupPage() {
   const online = Math.min(members, Math.max(1, Math.floor(members * 0.15)));
 
   async function handleGroupSubscribe() {
-    const memberRef = collection(db, "groups", groupId, "members");
-    await setDoc(doc(memberRef, JSON.parse(localStorage.getItem("user")).uid), {
-      userId: JSON.parse(localStorage.getItem("user")).uid,
-      userName: JSON.parse(localStorage.getItem("usermeta")).firstName,
-      isAdmin: false,
-      createdAt: new Date()
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user?.uid) return;
 
-    });
+    const memberRef = collection(db, "groups", groupId, "members");
+    try {
+      if (subscribed) {
+        // unsubscribe: remove member doc
+        await deleteDoc(doc(memberRef, user.uid));
+        setSubscribed(false);
+        setGroup((prev) => (prev ? { ...prev, memberCount: Math.max(0, (prev.memberCount || 1) - 1) } : prev));
+      } else {
+        // subscribe: create member doc
+        await setDoc(doc(memberRef, user.uid), {
+          userId: user.uid,
+          userName: JSON.parse(localStorage.getItem("usermeta")).firstName,
+          isAdmin: false,
+          createdAt: new Date(),
+        });
+        setSubscribed(true);
+        setGroup((prev) => (prev ? { ...prev, memberCount: (prev.memberCount || 0) + 1 } : prev));
+      }
+    } catch (err) {
+      console.error("Failed to toggle subscription:", err);
+    }
   }
 
 
