@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc, collection, addDoc, query, where, getDocs, Timestamp , setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../../firebase";
 import { FaArrowLeft, FaCog, FaUserFriends } from "react-icons/fa";
+import PostCard from "./PostCard";
 
 export default function GroupPage() {
   const { groupId } = useParams();
@@ -12,6 +13,10 @@ export default function GroupPage() {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [showManageMembers, setShowManageMembers] = useState(false);
+  const [showEditRules, setShowEditRules] = useState(false);
+  const [showEditGroupDetails, setShowEditGroupDetails] = useState(false);
+  const [membersList, setMembersList] = useState([]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -89,6 +94,62 @@ export default function GroupPage() {
     }
   };
 
+  const handleManageMembers = () => setShowManageMembers(true);
+  const handleEditRules = () => setShowEditRules(true);
+  const handleEditGroupDetails = () => setShowEditGroupDetails(true);
+  const closeModal = () => {
+    setShowManageMembers(false);
+    setShowEditRules(false);
+    setShowEditGroupDetails(false);
+  };
+
+  const Modal = ({ children, onClose }) => (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="bg-neutral-900 text-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+        {children}
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-neutral-400 hover:text-white"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+  );
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      if (!groupId) return;
+      try {
+        const membersRef = collection(db, "groups", groupId, "members");
+        const membersSnap = await getDocs(membersRef);
+        const members = membersSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setMembersList(members);
+      } catch (err) {
+        console.error("Failed to fetch members:", err);
+      }
+    };
+
+    if (showManageMembers) {
+      fetchMembers();
+    }
+  }, [groupId, showManageMembers]);
+
+  useEffect(() => {
+    const fetchMemberCount = async () => {
+      if (!groupId) return;
+      try {
+        const membersRef = collection(db, "groups", groupId, "members");
+        const membersSnap = await getDocs(membersRef);
+        setGroup((prev) => ({ ...prev, memberCount: membersSnap.size }));
+      } catch (err) {
+        console.error("Failed to fetch member count:", err);
+      }
+    };
+
+    fetchMemberCount();
+  }, [groupId]);
+
   if (loading) return <div className="p-6">Loading...</div>;
   if (!group) return <div className="p-6">Group not found</div>;
 
@@ -122,6 +183,36 @@ export default function GroupPage() {
     }
   }
 
+  const handleEditGroupDetailsSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const groupRef = doc(db, "groups", groupId);
+      await setDoc(groupRef, {
+        name: group.name,
+        bio: group.bio,
+      }, { merge: true });
+      alert("Group details updated successfully.");
+      setShowEditGroupDetails(false);
+    } catch (err) {
+      console.error("Failed to update group details:", err);
+      alert("Failed to update group details. Please try again.");
+    }
+  };
+
+  const handleEditRulesSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const groupRef = doc(db, "groups", groupId);
+      await setDoc(groupRef, {
+        rules: group.rules,
+      }, { merge: true });
+      alert("Rules updated successfully.");
+      setShowEditRules(false);
+    } catch (err) {
+      console.error("Failed to update rules:", err);
+      alert("Failed to update rules. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -155,9 +246,6 @@ export default function GroupPage() {
                 className={`px-4 py-2 rounded-lg font-semibold ${subscribed ? "bg-neutral-800 text-white" : "bg-white text-black"}`}>
                 {subscribed ? "Subscribed" : "Subscribe"}
               </button>
-              <button className="px-3 py-2 rounded-lg border border-white text-white hidden sm:inline-flex items-center gap-2">
-                <FaCog /> Settings
-              </button>
             </div>
           </div>
         </div>
@@ -182,18 +270,13 @@ export default function GroupPage() {
               {posts.length === 0 ? (
                 <div className="text-neutral-500 text-sm">No posts yet.</div>
               ) : (
-                posts.map((p) => (
-                  <article key={p.id} className="bg-neutral-900 border border-neutral-800 rounded-lg p-4 flex gap-4">
-                    <div className="w-10 flex flex-col items-center text-sm text-neutral-400">
-                      <button className="mb-2">▲</button>
-                      <div className="font-semibold text-white">{p.likesCount || 0}</div>
-                      <button className="mt-2">▼</button>
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-neutral-300 mb-2">{p.body}</div>
-                      <div className="text-xs text-neutral-500">{new Date(p.createdAt?.toDate?.() || Date.now()).toLocaleString()}</div>
-                    </div>
-                  </article>
+                posts.map((post) => (
+                  <PostCard
+                    post={post}
+                    key={post.id}
+                    currentUserId={JSON.parse(localStorage.getItem("user"))?.uid}
+                    currentUserName={JSON.parse(localStorage.getItem("usermeta"))?.firstName}
+                  />
                 ))
               )}
             </div>
@@ -216,8 +299,24 @@ export default function GroupPage() {
 
             <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-4">
               <h4 className="font-semibold mb-2">Group settings</h4>
-              <button className="w-full px-3 py-2 rounded-lg border border-neutral-700 text-neutral-300 hover:bg-neutral-800 text-left">Manage members</button>
-              <button className="w-full mt-2 px-3 py-2 rounded-lg border border-neutral-700 text-neutral-300 hover:bg-neutral-800 text-left">Edit rules</button>
+              <button
+                className="w-full px-3 py-2 rounded-lg border border-neutral-700 text-neutral-300 hover:bg-neutral-800 text-left"
+                onClick={handleManageMembers}
+              >
+                Manage members
+              </button>
+              <button
+                className="w-full mt-2 px-3 py-2 rounded-lg border border-neutral-700 text-neutral-300 hover:bg-neutral-800 text-left"
+                onClick={handleEditGroupDetails}
+              >
+                Edit group details
+              </button>
+              <button
+                className="w-full mt-2 px-3 py-2 rounded-lg border border-neutral-700 text-neutral-300 hover:bg-neutral-800 text-left"
+                onClick={handleEditRules}
+              >
+                Edit rules
+              </button>
             </div>
 
             <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-4">
@@ -230,6 +329,79 @@ export default function GroupPage() {
             </div>
           </aside>
         </div>
+
+        {/* Modals */}
+        {showManageMembers && (
+          <Modal onClose={closeModal}>
+            <h3 className="text-lg font-semibold mb-4">Manage Members</h3>
+            {membersList.length === 0 ? (
+              <p>No members found.</p>
+            ) : (
+              <ul className="space-y-2">
+                {membersList.map((member) => (
+                  <li key={member.id} className="flex items-center justify-between bg-neutral-800 p-2 rounded-lg">
+                    <span>{member.userName || "Unknown User"}</span>
+                    <span className="text-sm text-neutral-500">{member.isAdmin ? "Admin" : "Member"}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Modal>
+        )}
+
+        {showEditGroupDetails && (
+          <Modal onClose={closeModal}>
+            <h3 className="text-lg font-semibold mb-4">Edit Group Details</h3>
+            <form onSubmit={handleEditGroupDetailsSubmit}>
+              <label className="block mb-2">
+                Group Name:
+                <input
+                  type="text"
+                  value={group.name || ""}
+                  onChange={(e) => setGroup({ ...group, name: e.target.value })}
+                  placeholder="Enter group name"
+                  className="w-full mt-1 p-2 bg-neutral-800 border border-neutral-700 rounded-lg"
+                />
+              </label>
+              <label className="block mb-4">
+                Description:
+                <textarea
+                  value={group.bio || ""}
+                  onChange={(e) => setGroup({ ...group, bio: e.target.value })}
+                  placeholder="Enter group description"
+                  className="w-full mt-1 p-2 bg-neutral-800 border border-neutral-700 rounded-lg"
+                ></textarea>
+              </label>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-indigo-600 rounded-lg text-white hover:bg-indigo-700"
+              >
+                Save
+              </button>
+            </form>
+          </Modal>
+        )}
+
+        {showEditRules && (
+          <Modal onClose={closeModal}>
+            <h3 className="text-lg font-semibold mb-4">Edit Rules</h3>
+            <form onSubmit={handleEditRulesSubmit}>
+              <textarea
+                value={group.rules?.join("\n") || ""}
+                onChange={(e) => setGroup({ ...group, rules: e.target.value.split("\n") })}
+                placeholder="Enter rules, one per line"
+                className="w-full mt-1 p-2 bg-neutral-800 border border-neutral-700 rounded-lg mb-4"
+                rows={6}
+              ></textarea>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-indigo-600 rounded-lg text-white hover:bg-indigo-700"
+              >
+                Save
+              </button>
+            </form>
+          </Modal>
+        )}
       </div>
     </div>
   );
